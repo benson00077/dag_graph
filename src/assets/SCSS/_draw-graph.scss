@@ -1,0 +1,20 @@
+.graph-container {
+    margin: 50px;
+}
+
+.graph-wrapper {
+    position: absolute;
+    height: 90vh;
+}
+
+
+
+.vertex {
+    color: $text-lighter;
+    background-color: $background-vertex;
+    text-align: center;
+    padding: 10px;
+    width: 100px;
+    height: 20px;
+    left: 100px;
+  }

@@ -1,0 +1,26 @@
+@import './variables';
+@import './draw-graph';
+
+html body {
+    font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-weight: 500;
+    margin: 0;
+    background-color: $background;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+
+
+.vertex-input {
+    position: fixed;
+    right: 100px;
+    bottom: 50px;
+    
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+}
