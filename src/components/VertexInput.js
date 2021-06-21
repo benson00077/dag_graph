@@ -1,6 +1,10 @@
 import React, {useState, useRef, useEffect} from 'react'
 import CreateVertex from './CreateVertex'
 
+const Graph = require('./dag/graphClass')
+
+const graph = new Graph();
+
 // data layer -- access user's input vertex
 export default function VertexInput() {
 
@@ -31,7 +35,7 @@ export default function VertexInput() {
     
     return (
         <div>
-            <CreateVertex verticesInput={verticesInput}/>
+            <CreateVertex verticesInput={verticesInput} graph={graph}/>
             <div class="vertex-input">
               <form onSubmit={submitHandler}>
                 <label>Incomming Vertex</label>

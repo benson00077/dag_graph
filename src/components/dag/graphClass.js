@@ -3,7 +3,7 @@
 */
 
 /*
-graph 實例：
+graph 實例內的prop：
 
 graph =  {
   names: [ 'benson', 'ben ],
@@ -42,78 +42,32 @@ class Graph extends Dag {
         return result
     }
 
-    
-    giveRank = () => { // if not anonymous, this would not bind
-        if (this.topSorted.length === 0) {
+    giveRank() { // if not anonymous, this would not bind
+        if (this.topSorted.length !== this.names.length) {
             this.topologySortCaller()
         }
-        let rankNumber = 0;
-        this.visit_giveRank( rankNumber, this.topSorted )
+        this["rank"] = {}; // if not reset to empty, second time calling visit_giveRank wouod cause unexpected result
+        this.visit_giveRank()
     }
 
-    // recursive and visit vertices
-    visit_giveRank( rankNumber, [...topSorted] ) {
-        
-        let len = topSorted.length
-        let name = topSorted[len-1]     // last vertex name in topSorted
-        let vertex = this.vertices[name]
-        let incomingNames = [...vertex.incomingNames]
-    
-        /*
-            ------- Base case  -------
-        */
-        if (this["rank"].hasOwnProperty(name)) {return}
-    
-        /*
-            ------- corner case --------
-        */
-        // actual leaf, assigned as rank 0
-        if (!vertex.hasOutgoing) {
-            this["rank"][name] = rankNumber
-            topSorted.pop(name)     // exclude one leaf
-            this.visit_giveRank(rankNumber, topSorted)
-            return
-        }
-        
-        // name is root but could be INSIDE or LEFT SIDE of topsorted order  
-        if (incomingNames.length === 0) {           
-            this["rank"][name] = rankNumber 
-            this.visit_giveRank(rankNumber, topSorted)
-            // return -> whould break loop when find INSIDE root
-        }
-        
-        /*
-            -------- recursive case --------
-        */
-        rankNumber += 1                 // since all leaves excluded, it's next rank 
-        let nextName = topSorted[len-2] // In topology order, nextName is one left place beside name, and name is topSorted[len-1]
-        topSorted.pop()                 // exclude one leaf, which is variable: name
-
-        if (!nextName) {return}
-        
-        // nextName & name are root and must be LEFT SIDE of topsorted order
-        if (topSorted.length === 1) {  // when topSorted's len is 1, that 1 vertex = nextname = root vertex
-            this["rank"][name] = rankNumber   //  overwrite the one assinged in if (incomingNames.length === 0){...}
-            if (!incomingNames.includes(nextName)) {  // if name <- nextName
-                this["rank"][nextName] = rankNumber
-                return
+    visit_giveRank() {
+        let leafToRootArr = [...this.topSorted].reverse()
+        let rankNumber = 0
+        leafToRootArr.forEach((name, i) => {
+            let incomingNames = [...this.vertices[name].incomingNames]
+            let nextName = leafToRootArr[i+1] // nextName = the vertex on left side in topsort
+            // if nextName is same rank
+            if (!incomingNames.includes(nextName)) {
+                this.rank[name] = rankNumber
+                return 
             }
-            this["rank"][nextName] = rankNumber+1   // if nextName no outgoing to name
-            return
-        } 
-        
-        // In topology order, Neither is nextName outgo2 name OR nextName parallel with name 
-        if (incomingNames.includes(nextName)) {     // nextName outgo2 name, then nextName must be next rank
-            this["rank"][name] = rankNumber
-            this.visit_giveRank(rankNumber, topSorted)
-        } else if (!incomingNames.includes(nextName)) {    // nextName parallel with name 
-            this["rank"][name] = rankNumber
-            this["rank"][nextName] = rankNumber 
-            topSorted.pop()                         // exclude one leaf more, which is variable:  name's nextName
-            this.visit_giveRank(rankNumber, topSorted) 
-        }
-        
-        return
+            // else if nextName is higher rank
+            if (incomingNames.includes(nextName)) {
+                this.rank[name] = rankNumber
+                rankNumber += 1
+                return
+            }             
+        })
     }
 }
 

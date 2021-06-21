@@ -1,14 +1,12 @@
 import React, { Fragment } from 'react'
 import DrawGraph from './DrawGraph';
-const Graph = require('./dag/graphClass')
-
-const graph = new Graph();
 
 // graph instance creation layer
 // -----------------------> how to prevent this child comp's first-render??
-export default function CreateVertex({verticesInput}) {
+export default function CreateVertex({verticesInput, graph}) {
     let {incomming, vertex, outgoing} = verticesInput
     
+    // str "a,b" to [a,b] || str "a" to maintain as "a"
     const createVertex = () => {
         if (incomming) {
             incomming = incomming.split(',')
@@ -32,7 +30,7 @@ export default function CreateVertex({verticesInput}) {
 
     return (
         <Fragment>
-            <DrawGraph verticesInput={verticesInput} graph={graph}/>
+            <DrawGraph graph={graph}/>
         {/* <div>
             <p>Before Sorted</p>
             <ul>
