@@ -6,38 +6,40 @@ import draggable from './draggable'
 function ArrowDrawer({graph, topSorted}) {
     let topSortedRev = topSorted.reverse() // add arrow svg from leaf vertex to the root vertex
     const didMountRef = useRef(false)
-    console.log("hihhihihi")
     
     // Draw direciton arrow, by DOM manipulation on svg > g > path & adding attribue
     useEffect(() => {
-        if (didMountRef.current) { // if not initial render
-            console.log("test for not initial render ")
-            console.log(topSorted)
-            for (let i = topSorted.length-1; i >= 0; i--) {
-                // add arrow svg from leaf vertex to the root vertex
-                let currentName = topSorted[i]
-                
-                // add arrow svg in the order of the leaf's incomming vertex
-                graph["vertices"][currentName]["incomingNames"].forEach((incommingName)=> {
+        console.log(`>>>>>> Init render of ArrowDrawe: ${didMountRef.current}`)
+        
+        // if not initial render
+        if (didMountRef.current) {
+
+            // iterate vertices: from leaf vertex to the root vertex
+            topSortedRev.forEach((currentName, i) => {
+                let incomingNames = graph["vertices"][currentName]["incomingNames"]
+
+                // iterate the current vertex's incomming vertex
+                incomingNames.forEach((incommingName)=> {
                     let divTo = document.querySelector(`#${currentName}`)
                     let divFrom = document.querySelector(`#${incommingName}`)
                     let arrowLeft = document.querySelector(`#arrowLeft_${currentName}_${incommingName}`)
+                    
+                    // Initially draw svg arrows 
                     drawConnector(divFrom, divTo, arrowLeft)
+
+
+
+                    /**
+                     *  以下 draggable 兩者要分流管理
+                     */
+                    // set event listenr to div & svg arrows -- divTo 
+                    draggable(divTo, drawConnector, divFrom, arrowLeft, 1)
+
+                    // set event listenr to div & svg arrows -- divFron 
+                    draggable(divFrom, drawConnector, divTo, arrowLeft, 2)
                 })
-                
-            }
-            // >>>>>>>>>>>>>>  Draggable <<<<<<<<<<<<<<
-            for (let i = topSorted.length-1; i >= 0; i--) {
-                let divA = document.querySelector(`#${topSorted[i]}`);
-                let arrowFromPoints = document.querySelectorAll(`[vertex_from="${topSorted[i]}"]`)
-                let arrowToPoints = document.querySelectorAll(`[vertex_to="${topSorted[i]}"]`)
-                // if (arrowFromPoints[0]) {
-                //     console.log(arrowFromPoints[0])
-                //     console.log(arrowFromPoints[0].getAttribute(`${topSorted[i]}`)) //>>>>>>>>>>>>第一次抓不到，腳本新增東西重新整理後才抓得到<<<<<<
-                // }
-                draggable(divA, arrowFromPoints, arrowToPoints)
-            }
-            
+
+            }) 
         }
         return () => {
             didMountRef.current = true
@@ -88,8 +90,9 @@ let drawConnector = function(divFrom, divTo, arrowLeft) {
         (toPosnLeft.x - 100) + "," + (toPosnLeft.y) + " " +
         (toPosnLeft.x      ) + "," + (toPosnLeft.y);
     arrowLeft.setAttribute("d", dStrLeft);
-    // console.log(`>>>Draw arrow from ${divFrom.id} to ${divTo.id}`)
-    // console.log(arrowLeft)
+     // console.log(`>>>Draw arrow from ${divFrom.id} to ${divTo.id}`)
+     //console.log(arrowLeft)
+     // console.log(divTo.offsetLeft)
   };
 
 

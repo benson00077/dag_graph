@@ -47,10 +47,10 @@ class Graph extends Dag {
             this.topologySortCaller()
         }
         this["rank"] = {}; // if not reset to empty, second time calling visit_giveRank wouod cause unexpected result
-        this.visit_giveRank()
+        this._visit_giveRank()
     }
 
-    visit_giveRank() {
+    _visit_giveRank() {
         let leafToRootArr = [...this.topSorted].reverse()
         let rankNumber = 0
         leafToRootArr.forEach((name, i) => {

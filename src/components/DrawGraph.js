@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect, createContext} from 'react'
-import draggable from './draggable'
+import React from 'react'
 import ArrowDrawer from './ArrowDrawer'
 
 // graph.vertices interator   >>>> TBD: siblig comp to focus on UI / css and svg renderer
@@ -66,65 +65,3 @@ export default function DrawGraph({graph}) {
         </div>
     )
 }
-
-
-let drawConnector = function(divFrom, divTo, arrowLeft) {
-    let fromPosnLeft = {
-      x: divFrom.offsetLeft - 8,
-      y: divFrom.offsetTop  + divFrom.offsetHeight / 2 + 10
-    };
-    let toPosnLeft = {
-      x: divTo.offsetLeft - 8,
-      y: divTo.offsetTop  + divTo.offsetHeight / 2 - 10
-    };
-    let dStrLeft =
-        "M" +
-        (fromPosnLeft.x      ) + "," + (fromPosnLeft.y) + " " +
-        "C" +
-        (fromPosnLeft.x - 100) + "," + (fromPosnLeft.y) + " " +
-        (toPosnLeft.x - 100) + "," + (toPosnLeft.y) + " " +
-        (toPosnLeft.x      ) + "," + (toPosnLeft.y);
-    arrowLeft.setAttribute("d", dStrLeft);
-    // console.log(`>>>Draw arrow from ${divFrom.id} to ${divTo.id}`)
-    // console.log(arrowLeft)
-  };
-
-
-
-
-
-
-let drawConnector_proto = function(divA, divB, arrowLeft, arrowRight) {
-    let posnALeft = {
-      x: divA.offsetLeft - 8,
-      y: divA.offsetTop  + divA.offsetHeight / 2
-    };
-    let posnARight = {
-      x: divA.offsetLeft + divA.offsetWidth + 8,
-      y: divA.offsetTop  + divA.offsetHeight / 2    
-    };
-    let posnBLeft = {
-      x: divB.offsetLeft - 8,
-      y: divB.offsetTop  + divB.offsetHeight / 2
-    };
-    let posnBRight = {
-      x: divB.offsetLeft + divB.offsetWidth + 8,
-      y: divB.offsetTop  + divB.offsetHeight / 2
-    };
-    let dStrLeft =
-        "M" +
-        (posnALeft.x      ) + "," + (posnALeft.y) + " " +
-        "C" +
-        (posnALeft.x - 100) + "," + (posnALeft.y) + " " +
-        (posnBLeft.x - 100) + "," + (posnBLeft.y) + " " +
-        (posnBLeft.x      ) + "," + (posnBLeft.y);
-    arrowLeft.setAttribute("d", dStrLeft);
-    let dStrRight =
-        "M" +
-        (posnBRight.x      ) + "," + (posnBRight.y) + " " +
-        "C" +
-        (posnBRight.x + 100) + "," + (posnBRight.y) + " " +
-        (posnARight.x + 100) + "," + (posnARight.y) + " " +
-        (posnARight.x      ) + "," + (posnARight.y);
-    arrowRight.setAttribute("d", dStrRight);
-  };

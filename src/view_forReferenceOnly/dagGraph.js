@@ -40,6 +40,11 @@ var drawConnector = function() {
 
 
 /* Jquery for drag and drop */
+/**
+ * drag( event, ui )
+ * Triggered while the mouse is moved during the dragging, immediately before the current move happens.
+ */
+
 $("#a, #b").draggable({
   drag: function(event, ui) {
     drawConnector();

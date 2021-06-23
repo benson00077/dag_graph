@@ -1,4 +1,4 @@
-function draggable(div, arrowFromPoints, arrowToPoints) {
+function draggable(divMove, cb, divStay, arrowLeft, n) {
     
     console.log("Activating draggable------")
 
@@ -10,8 +10,7 @@ function draggable(div, arrowFromPoints, arrowToPoints) {
     let isDown = false
     // var div = document.querySelector(".mydiv");
 
-
-    div.addEventListener('mousedown', function(e) {
+    divMove.addEventListener('mousedown', function(e) {
     isDown = true
     mouseX = e.pageX
     mouseY = e.pageY
@@ -32,11 +31,40 @@ function draggable(div, arrowFromPoints, arrowToPoints) {
         if (isDown) {
             const dx = e.pageX - mouseX
             const dy = e.pageY - mouseY
-            div.style.transform = `translate(${offsetX + dx}px,${offsetY + dy}px)`;
-            arrowsTranslate(arrowFromPoints, arrowToPoints, dx, dy)
+            divMove.style.transform = `translate(${offsetX + dx}px,${offsetY + dy}px)`;
+            console.log(divMove.style.top)
+            console.log(divMove.style.transform)
+
+            // 搭配 drawConnector 內的變數作抵銷: 初始offset值 + (拖曳後顯示在 transform:translate 的值)，即(offsetX + dx)
+            let divMovePosn = {
+                offsetLeft: divMove.offsetLeft + (offsetX + dx),
+                offsetTop: divMove.offsetTop + (offsetY + dy),
+                offsetHeight: divMove.offsetHeight
+            }
+
+            let divStayPosn = {
+                offsetLeft: divStay.offsetLeft,
+                offsetTop: divStay.offsetTop,
+                offsetHeight: divStay.offsetHeight
+            }
+            
+
+            // >>>>>>>>> 這個不會變動，所以箭頭才沒跟著動 <<<<<<<<,
+            // >>>>>>>>> div變動可能要直接改 left, top css 而不是用 transform translate <<<<<<<<,
+            // >>>>>>>>> 這樣 div.offsetLeft 才會跟著每次執行函數時都有變動 <<<<<<<<,
+            console.log(`Moving div: ${divMove.id}`)
+            console.log(divMove.offsetLeft)
+            
+            if (cb) {
+                if (n === 1) {cb(divStayPosn, divMovePosn, arrowLeft)}
+                if (n === 2) {cb(divMovePosn, divStayPosn, arrowLeft)}
+            }
         }
     }
 }
+
+
+/// TEST BLOCK
 
 function arrowsGetD(arrowFromPoints, arrowToPoints) {
 
