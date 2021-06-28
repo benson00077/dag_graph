@@ -29,7 +29,15 @@ const testCaseMap = {
             graph.addEdges('b', null, 'c', 'a')
             graph.addEdges('c', null, '', 'f')
             graph.giveRank()
-        }
+        },
+    6: () => {
+        graph.addEdges('Catherine', null, ["David", "George"], ["Alice", "Flora"])
+        graph.addEdges('Benson', null, 'David', 'Eva')
+        graph.addEdges('Benson', null, 'Catherine', 'Ben')
+        graph.addEdge('Alice', 'Catherine')
+        graph.addEdge('Benson', 'Alice')
+        graph.giveRank()
+        },
 }
 
 
@@ -51,4 +59,5 @@ let testCase = (caseNum, note) => {
     }
 }
 
-testCase(5)
+testCase(2)
+testCase(6)

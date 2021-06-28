@@ -6,17 +6,50 @@ import DrawGraph from './DrawGraph';
 export default function CreateVertex({verticesInput, graph}) {
     let {incomming, vertex, outgoing} = verticesInput
     
-    // str "a,b" to [a,b] || str "a" to maintain as "a"
     const createVertex = () => {
+
         if (incomming) {
             incomming = incomming.split(',')
-            if(incomming.length === 1) {incomming = incomming[0]}
+            // str "a" → "a" || arr [a , b,c] → arr[a,b]
+            switch (incomming.length === 1) {
+                case true: 
+                    incomming = incomming[0]
+                    break
+                case false: 
+                    incomming.forEach((e,i) => {
+                        incomming[i] = e.trim()
+                    })
+                    break
+            }
+            // if(incomming.length === 1) {incomming = incomming[0]}
+            // if(Array.isArray(incomming) && incomming.length > 1) {
+            //     incomming.forEach((e,i) => {
+            //         incomming[i] = e.trim()
+            //     })
+            // }
         }
         if (outgoing) {
+            // str "a" → "a" || arr [a , b,c] → arr[a,b]
             outgoing = outgoing.split(',')
-            if(outgoing.length === 1) {outgoing = outgoing[0]}
+            switch (outgoing.length === 1) {
+                case true: 
+                    outgoing = outgoing[0]
+                    break
+                case false: 
+                    outgoing.forEach((e,i) => {
+                        outgoing[i] = e.trim()
+                    })
+                    break
+            }
+            // if(outgoing.length === 1) {outgoing = outgoing[0]}
+            // if(Array.isArray(outgoing) && outgoing.length > 1) {
+            //     outgoing.forEach((e,i) => {
+            //         outgoing[i] = e.trim()
+            //     })
+            // }
         }
-        
+
+        // Create vertex
         graph.addEdges(vertex, null, outgoing, incomming)
     }
 

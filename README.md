@@ -126,11 +126,14 @@ V.1 See example below <br/>
 # （參考） DAG 物件實例 graph
     Directedd Acyclic Graph
 - 舉例，按照以下順序創建 vertex ，箭頭 → 表示彼此流向關係:
-  1. Benson → Alice
-  2. Alice → Catherine
-  3. Ben → Benson → Catherine
-  4. Eva → Benson → David
-  5. [Ben, Flora] → Catherine → [David, George]
+  | Incomming | → Vertex → | Outgoing
+  | ------ | ------ | ------   |
+  |        | Benson | Alice    |
+  |        | Alice  | Catherine|
+  | Ben    | Benson | Catherine|
+  | Eva    | Benson | David    |
+  |[Ben, Flora] | Catherine | [David, George]|
+
 - `graph.vertices` Object by `console.table()` :
 ```zsh
 ┌───────────┬─────────────┬───────────────────────────────────────────┬────────────────────────────────┬─────────────┬───────┐
