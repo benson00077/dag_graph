@@ -4,7 +4,9 @@
 
 .graph-wrapper {
     position: relative;
-    height: 900px; // temp
+    height: 850px; // temp
+    border: solid 1px black;
+    border-radius: 2.5%;
     svg{
         position: absolute;
         height: 100%; // temp
@@ -24,4 +26,12 @@
     height: 20px;
     left: 100px;
     border-radius: 5%;
+
+    /*
+     To Prevent user selectin inside the drag source 
+    */
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
   }

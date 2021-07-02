@@ -1,9 +1,9 @@
-import VertexInput from './components/VertexInput';
+import GraphMiddleWare from './components/GraphMiddleWare';
 
 function App() {
   return (
     <div className="App">
-      <VertexInput />
+      <GraphMiddleWare/>
     </div>
   );
 }

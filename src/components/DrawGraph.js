@@ -3,11 +3,13 @@ import React, { useState, useRef, useEffect } from 'react'
 import DrawVertex from './DrawVertex'
 import DrawArrow from './DrawArrow'
 
-// graph.vertices interator   >>>> TBD: siblig comp to focus on UI / css and svg renderer
-// // 針對每個 graph vertex mpa 下面的 div 零件，還有svg圖
-// --------------------->>>> 第一次 render 都會抓不到 a,b useRef 這要怎麼解決？
-// 可參考這 https://stackoverflow.com/questions/53179075/with-useeffect-how-can-i-skip-applying-an-effect-upon-the-initial-render
-// 或參考這 https://www.thearmchaircritic.org/tech-journal/prevent-useeffects-callback-firing-during-initial-render
+/**
+ * Represent middleware for drawwing arrows svg dynamically
+ * Represent layout for vertex's div and direction arrows svg container
+ * @param {object} graph instance of Graph
+ * @returns {Component} DrawArrow
+ * @returns {Component} DrawVertex
+ */
 export default function DrawGraph({graph}) {
     
     let topSorted = [...graph["topSorted"]]
@@ -15,43 +17,66 @@ export default function DrawGraph({graph}) {
 
     // Arrows init
     let [arrowsRecord, arrowsNumber] = arrowsInfoGetter(graph)
-    console.table(arrowsRecord)
 
-
-    // Vertex ref for DOM (drag-n-drop & arrow connetor)
+    // Vertex ref & Arrows ref for DOM (drag-n-drop & arrow connetor)
     const divsRefs = useRef([])
     divsRefs.current = [...new Array(length)].map(() => React.createRef())
-    
-    // Arrows ref for DOM (drag-n-drop & arrow connetor)
     const arrowsRefs = useRef([])
     arrowsRefs.current = [...new Array(arrowsNumber)].map(() => React.createRef())
 
-
-    /// >>>>>>>>>>>>>>>>>    這邊 操作 virtual DOM ～～    <<<<<<<<<<<<<<<<<<<<<
+    /**
+     *  Initial Drawing of arrows svg
+     */
+    const didMountRef = useRef(false)
     useEffect(() => {
-        console.log(divsRefs.current)
+        //console.log(divsRefs.current)
         console.log(arrowsRefs.current)
-        // let [arrowsRecord, counter] = arrowsInfoGetter(graph)
-        // console.table(arrowsRecord)
+        console.log("DrawGraph~")
+        if (didMountRef.current) {
+            arrowsRefs.current.forEach((arrow, i) => {
+                arrow = arrow.current
+                let from = arrow.getAttribute("vertex_from")
+                let to = arrow.getAttribute("vertex_to")
+                let divFrom = null 
+                let divTo = null
+                
+                divsRefs.current.forEach((div, i) => {
+                    div = div.current
+                    if (div.id === from) {
+                        divFrom = div
+                        return 
+                    }
+                    if (div.id === to) {
+                        divTo = div
+                        return 
+                    }
+                })
+                //console.log(divFrom, divTo, arrow)
+                drawConnector(divFrom, divTo, arrow)
+            })
+        }
+        return(() => {
+            didMountRef.current = true
+        })
     })
 
     const arrowRenderer = (arrowsRecord, arrowsNumber) => {
-        console.log(arrowsRecord);
+
         return (
             [...Array(arrowsNumber)].map((e, i) => (
                 <DrawArrow 
-                    incommingName={arrowsRecord[i].incommingName} name={arrowsRecord[i].name}
+                    difRef = {divsRefs.current[i]}
+                    incommingName={arrowsRecord[i].incommingName} name={arrowsRecord[i].name} key={i}
                     forwardedRef={arrowsRefs.current[i]} />
             ))
         )
     }
     
     const vertexRenderer = () => {
-        console.log("iji")
         let rank = {...graph["rank"]}
         let graphHeight = rank[`${topSorted[0]}`]
         let rowProcessedTimes = {} // 作為每一行div是否render過的計數器
-                                   // NOT using useState because setState always case a re-render
+                                   // NOT using useState because setState cause a re-render
 
         return (
             // 按照拓墣排序迭代每個 vertex，同時紀錄他們所在階層 currentRow
@@ -64,6 +89,8 @@ export default function DrawGraph({graph}) {
                     : rowProcessedTimes[row] = 1
                 let column = rowProcessedTimes[row]
 
+                // NOTICE: why can't ???
+                console.table(arrowsRefs.current)
 
                 return (
                 <DrawVertex 
@@ -71,7 +98,8 @@ export default function DrawGraph({graph}) {
                     column = {column}
                     row = {row}
                     rowProcessedTimes = {rowProcessedTimes}
-                    forwardedRef={divsRefs.current[i]} />
+                    forwardedRef={divsRefs.current[i]} 
+                    forwardedArrowsRefs={arrowsRefs.current} />
                 )
               })
         )
@@ -100,6 +128,23 @@ export default function DrawGraph({graph}) {
 }
 
 
+/**
+ * 
+ * @param {object} graph instance of Graph
+ * @returns {int} arrowsNumber
+ * @returns {Object} arrowsRecord -> 
+ * {
+ *    0 : {
+ *       name: "c",
+ *       incommingName: "b"
+ *      },
+ *    
+ *    1 : {
+ *       name: "b",
+ *       incommingName: "a"
+ *     }
+ *  }
+ */
 const arrowsInfoGetter = (graph) => {
 
     let topSorted = [...graph["topSorted"]]
@@ -117,19 +162,43 @@ const arrowsInfoGetter = (graph) => {
             counter += 1
         })
     })
-    
+
     return [arrowsRecord, counter]
-    /**
-     *  arrowsRecord = {
-     *    0 : {
-     *       name: "c",
-     *       incommingName: "b"
-     *      },
-     *    
-     *    1 : {
-     *       name: "b",
-     *       incommingName: "a"
-     *     }
-     *  }
-     */
+}
+
+
+/**
+ * Set svg dom tag's attibue, represent svg drawer for arrows
+ * @param {DOM} divFrom represent vertex div
+ * @param {DOM} divTo represent vertex div
+ * @param {DOM} arrowLeft represent arrow svg html tag: <g> -> <path>
+ */
+const drawConnector = function(divFrom, divTo, arrowLeft) {
+    let fromPosnLeft = {
+      x: divFrom.offsetLeft - 8,
+      y: divFrom.offsetTop  + divFrom.offsetHeight / 2 + 10
+    };
+    let toPosnLeft = {
+      x: divTo.offsetLeft - 8,
+      y: divTo.offsetTop  + divTo.offsetHeight / 2 - 10
+    };
+    let dStrLeft =
+        "M" +
+        (fromPosnLeft.x      ) + "," + (fromPosnLeft.y) + " " +
+        "C" +
+        (fromPosnLeft.x - 100) + "," + (fromPosnLeft.y) + " " +
+        (toPosnLeft.x - 100) + "," + (toPosnLeft.y) + " " +
+        (toPosnLeft.x      ) + "," + (toPosnLeft.y);
+    arrowLeft.setAttribute("d", dStrLeft);
+     // console.log(`>>>Draw arrow from ${divFrom.id} to ${divTo.id}`)
+     //console.log(arrowLeft)
+     // console.log(divTo.offsetLeft)
+  };
+
+
+const translateTracker = (e) => {
+    let transform = e.style.transform.split(" ")
+    let translateX = transform[0].replace(/[^\d.]/g, '')
+    let translateY = transform[1].replace(/[^\d.]/g, '')
+    return [translateX, translateY]
 }

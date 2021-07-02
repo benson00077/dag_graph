@@ -1,5 +1,6 @@
 /**
- *  tmp depricated. see DrawGragp -> DrawArrow
+ * Deprecated ** 
+ * tmp depricated. see DrawGragp -> DrawArrow   
  */
 
 import React, {useRef, useEffect} from 'react'

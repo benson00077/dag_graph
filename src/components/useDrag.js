@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react'
 
+/**
+ * Represent Dragging functionality implementation hooks -- for vertex's div
+ * @param {object} ref as DOM of div
+ * @param {object} deps e.g. state translate {x: 0, y: 0} -- for css transform attribute
+ * @param {object} options as cb functions to invoke in event listener. e.g. setTranslate
+ * @returns {bool} isDragging
+ */
 const useDrag = (ref, deps = [], options) => {
    
     // init for cb functions

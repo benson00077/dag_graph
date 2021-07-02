@@ -1,18 +1,12 @@
-import React, {useState, useRef, useEffect} from 'react'
-import CreateVertex from './CreateVertex'
+import React, {useState, useRef } from 'react'
 
-const Graph = require('./dag/graphClass')
+/**
+ * Represent UI Layer -- user's input
+ * @param {function} setVerticesInput 
+ * @returns {JSX} form UI
+ */
 
-const graph = new Graph();
-
-// data layer -- access user's input vertex
-export default function VertexInput() {
-
-    const [verticesInput, setVerticesInput] = useState({
-        vertex: '',
-        incomming: '',
-        outgoing: '',
-    })
+export default function VertexInput({setVerticesInput}) {
 
     const [vertex, setVertex] = useState('')
     const [incomming, setIncomming] = useState('')
@@ -34,8 +28,7 @@ export default function VertexInput() {
     }
     
     return (
-        <div>
-            <CreateVertex verticesInput={verticesInput} graph={graph}/>
+        <React.Fragment>
             <div class="vertex-input">
               <form onSubmit={submitHandler}>
                 <label>Incomming Vertex</label>
@@ -50,6 +43,6 @@ export default function VertexInput() {
                 <button>Create !</button>
               </form>
             </div>
-        </div>
+        </React.Fragment>
     )
 }

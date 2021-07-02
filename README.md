@@ -8,13 +8,12 @@
 - [Building Log](#building-log)
   - [Tree & Component](#tree--component)
   - [Front end -- React Thinking](#front-end----react-thinking)
-    - [問：With useEffect, how can I skip applying an effect upon the initial render?](#問with-useeffect-how-can-i-skip-applying-an-effect-upon-the-initial-render)
-    - [問：給定 int n ，如何 map 出 n 個 JSX nodes?](#問給定-int-n-如何-map-出-n-個-jsx-nodes)
-    - [問：噴錯 `Warning: Maximum update depth exceeded.`](#問噴錯-warning-maximum-update-depth-exceeded)
-    - [問：能不能在 `render` 內用 `setState()`? 例如應用在計數器，計算 render 內 map() 執行了幾次？](#問能不能在-render-內用-setstate-例如應用在計數器計算-render-內-map-執行了幾次)
+    - [☞ With useEffect, how can I skip applying an effect upon the initial render?](#-with-useeffect-how-can-i-skip-applying-an-effect-upon-the-initial-render)
+    - [☞ 給定 int n ，如何 map 出 n 個 JSX nodes?](#-給定-int-n-如何-map-出-n-個-jsx-nodes)
+    - [☞ 能不能在 return 內用 setState()? 例如應用在計數器，計算 return 內 map() 執行了幾次？](#-能不能在-return-內用-setstate-例如應用在計數器計算-return-內-map-執行了幾次)
   - [Front end -- CSS Thinking](#front-end----css-thinking)
-    - [問：`height: 100%` 設定在 svg 或是 div，但實際渲染 hegight會是 0px。](#問height-100-設定在-svg-或是-div但實際渲染-hegight會是-0px)
-    - [問：div 的位置移動，改變 postition top / left 好？ 用 trnasform: translate() 好？](#問div-的位置移動改變-postition-top--left-好-用-trnasform-translate-好)
+    - [☞ height: 100% 設定在 svg 或是 div，但實際渲染 hegight會是 0px。](#-height-100-設定在-svg-或是-div但實際渲染-hegight會是-0px)
+    - [☞ div 的位置移動，改變 postition 好？ 用 trnasform: translate 好？](#-div-的位置移動改變-postition-好-用-trnasform-translate-好)
   - [Front end -- DAG Drawing Thinking -- draw by rank](#front-end----dag-drawing-thinking----draw-by-rank)
   - [Back end](#back-end)
 - [（參考） DAG 物件實例 graph](#參考-dag-物件實例-graph)
@@ -28,15 +27,14 @@ SCSS setting with `npm install scss-loader node-scss --save-dev` <br/>
 
 # Usage
 Give vertex name and it's incomming/outgoing vertices' name, to get the graph (DAG, or Directedd Acyclic Graph) that show the direction flow <br/>
-V.1 See example below <br/>
-![image](https://github.com/benson00077/dag_graph/blob/main/public/demo/demo1.png) 
 
 # Features to build 
 | Features | Problems | note
 | ------ | ------ | ------ |
-| To support many times of vertices creation | state lost after rerender | done -- by hoisting state |
-| SVG direction arrow render  |  not in rightplace | fixxed -- by CSS `position absolute` and parent's node's `position relative` |
-| drag-and-drop on vertex and svg arrow | svg arrow not drag-and-drop with divs  | ❓TBD
+| To support many times of vertices creation | state lost after re-input form | done -- by hoisting state |
+| SVG direction arrow render  |  not in right place | fixxed -- by CSS `position absolute` and parent's node's `position relative` |
+| drag-and-drop on vertex and svg arrow | 1. svg arrow not drag-and-drop with divs <br/> 2. vertex move randomly when dragging  | ❓TBD
+| Vertex back to place with onelick |  | 
 
 
 # Building Log
@@ -51,12 +49,12 @@ V.1 See example below <br/>
 │       ├── _variables.scss
 │       └── base.scss
 ├── components
-│   ├── SOME_parent.js    # TBD
-│   ├── VertexInput.js    ## Access user's vertex input
-│   ├── CreateVertex.js   ## Create Graph instance having vertex
-│   ├── DrawGraph.js      ### Layout for vertex's div and direction arrow || Render vertex's div by map()
-│   ├── ArrowDrawer.js    #### Render direction arrow || Implement drag-n-drop logic
-│   ├── draggable.js      #### Helper function for ArrowDrawer
+│   ├── GraphMiddleWare.js # Represent Graph obj's storage layer
+│   ├── VertexInput.js     ## Represent UI Layer -- user's input
+│   ├── CreateVertex.js    ## Represent graph instance creation layer
+│   ├── DrawGraph.js       ### Represent layout for vertex's div and direction arrows svg
+│   ├── ArrowDrawer.js     #### Render direction arrow || Implement drag-n-drop logic
+│   ├── draggable.js       #### Helper function for ArrowDrawer
 │   └── dag               
 │       ├── dagClass.js   # parent class
 │       ├── graphClass.js # sibling class
@@ -65,9 +63,9 @@ V.1 See example below <br/>
 ```
 
 ## Front end -- React Thinking
-### 問：With useEffect, how can I skip applying an effect upon the initial render?
+### ☞ With useEffect, how can I skip applying an effect upon the initial render?
 - 解：[see here](https://stackoverflow.com/questions/53179075/with-useeffect-how-can-i-skip-applying-an-effect-upon-the-initial-render)
-### 問：給定 int n ，如何 map 出 n 個 JSX nodes?
+### ☞ 給定 int n ，如何 map 出 n 個 JSX nodes?
 - 解：注意不能用 `Array(n).map()`。 [See here](https://stackoverflow.com/questions/34189370/how-to-repeat-an-element-n-times-using-jsx)
   ```JSX
   [...Array(n)].map((e, i) => <span className="busterCards" key={i}>♦</span>)
@@ -77,18 +75,16 @@ V.1 See example below <br/>
   Array(4)        // [empty x 4]
   [...Array(4)]   // [undefined, undefined ....]
   ```
-### 問：噴錯 `Warning: Maximum update depth exceeded.`
-- 解：不要在 `uesEffect` 內呼叫 `setState`，想想 Component Lifecycle
-### 問：能不能在 `render` 內用 `setState()`? 例如應用在計數器，計算 render 內 map() 執行了幾次？ 
+### ☞ 能不能在 return 內用 setState()? 例如應用在計數器，計算 return 內 map() 執行了幾次？ 
 - 解：不建議
   - 解釋可以參考[這裡](https://stackoverflow.com/questions/55373878/what-are-the-differences-when-re-rendering-after-state-was-set-with-hooks-compar)。
   - 作為render內迭代(如map())的計數器，我用了外部實字物件，如[rowProcessedTimes](./src/components/DrawGraph.js)。
 
 
 ## Front end -- CSS Thinking
-### 問：`height: 100%` 設定在 svg 或是 div，但實際渲染 hegight會是 0px。
+### ☞ height: 100% 設定在 svg 或是 div，但實際渲染 hegight會是 0px。
 - 解：`100%` means 100% of the `parent container`'s height
-### 問：div 的位置移動，改變 postition top / left 好？ 用 trnasform: translate() 好？
+### ☞ div 的位置移動，改變 postition 好？ 用 trnasform: translate 好？
 - 解：根據套件 react-draggable 解釋：Draggable items are moved using CSS Transforms. This allows items to be dragged regardless of their current positioning (relative, absolute, or static). Elements can also be moved between drags without incident.
 - 目前我 div 也用 CSS Transforms
 - 但若是 svg 就要直接修改位置數值，會用到 offsetLeft 等，所以 potisitoning 要為 fixxed or absolute 等。
@@ -109,11 +105,15 @@ V.1 See example below <br/>
      - JS `node.offsetLeft`
      - SVG's `node.setAttribute(d, "M...C..")` -- on `svg > g > path`
    - Idea from [here](https://stackoverflow.com/questions/39553105/drawing-curved-svg-arrow-lines-from-div-to-div)
-5. ⏰ Vanilla JS Drag-and-Drop [refer here](https://codepen.io/Shikkediel/pen/VLZKor?editors=0110)
+5. ⏰ Vanilla JS Drag-and-Drop [See here](https://engineering.datorama.com/mastering-drag-drop-using-reactjs-hooks-fb58dc1f816f), [and here](https://engineering.datorama.com/mastering-drag-drop-with-reactjs-part-01-39bed3d40a03)
    - ❓問題：單獨使 div 拖曳沒問題，但怎麼把渲染箭頭的函數也放進 draggable() 讓他一起監聽、改變並即時渲染箭頭位置？
    - ❓問題：第一次渲染箭頭沒問題，想要拖曳移動div位置後箭頭也有跟著移動。但第二次重新點選div再要拖曳時，arrow又重新渲染，跑回起始位置 
      - 問題釐清：是因為 re-render嗎？What causes the re-render ? [這裡會有相關嗎？](https://stackoverflow.com/questions/56599583/useeffect-hook-example-what-causes-the-re-render)
      - 問題釐清：因為拖曳時給定事件監聽的 div 位置參數都是初始渲染的固定值，才會這樣。要重新設計成動態捕捉。
+   - ❓Callback Ref ? 
+   - How to use multiple refs for an array of elements with hooks? [See Here](https://stackoverflow.com/a/56063129/16124226)
+   - ❓初次渲染箭頭跟更新箭頭 這邊全都太多相關聯了，要重寫
+   - ❓不太懂為何 arrows refs 可以那樣傳給 vertex，反之 drawGraph內存取不到 arrows refs
 
 ## Back end
 - class Dag, sub class graph inplementation
@@ -132,7 +132,11 @@ V.1 See example below <br/>
   |        | Alice  | Catherine|
   | Ben    | Benson | Catherine|
   | Eva    | Benson | David    |
-  |[Ben, Flora] | Catherine | [David, George]|
+  |[ Ben, Flora ] | Catherine | [ David, George ]|
+
+- V.1 See example below
+![image](https://github.com/benson00077/dag_graph/blob/main/public/demo/demo2.png) 
+
 
 - `graph.vertices` Object by `console.table()` :
 ```zsh
@@ -164,4 +168,3 @@ V.1 See example below <br/>
 │    Ben    │   4    │
 └───────────┴────────┘
 ```
-
