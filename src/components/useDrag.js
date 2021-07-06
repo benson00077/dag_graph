@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 /**
  * Represent Dragging functionality implementation hooks -- for vertex's div
  * @param {object} ref as DOM of div
  * @param {object} deps e.g. state translate {x: 0, y: 0} -- for css transform attribute
- * @param {object} options as cb functions to invoke in event listener. e.g. setTranslate
+ * @param {object} options as cb functions to be invoked in event listener. e.g. setTranslate
  * @returns {bool} isDragging
  */
 const useDrag = (ref, deps = [], options) => {
    
+    //try {console.log(`>>>useDrag Rendering on ${ref.current.nodeName} -- ${ref.current.id}`)} catch {console.log(">>>useDrag")}
+
     // init for cb functions
     const {
         onPointerDown = () => {},
@@ -16,83 +18,85 @@ const useDrag = (ref, deps = [], options) => {
         onPointerMove = () => {},
         onDrag = () => {}
     } = options
-
-    const [isDragging, setIsDragging] = useState(false)
-
-    /**
-     *  mouseX 初始 點選時 的滑鼠絕對位置
-     *  dx 滑鼠本身 跟上一次滑鼠位置的 距離
-     *  offsetX 滑鼠放開後，要有容器儲存這個偏移量，以供下次使用
-     */
-
-    // init for divs
-    let mouseX = 0
-    let mouseY = 0
-    let offsetX = 0
-    let offsetY = 0
-    let isDown = false
-
     
-    const move = e => {
-        if (isDown) {
-            const dx = e.pageX - mouseX
-            const dy = e.pageY - mouseY
-            onDrag(offsetX + dx, offsetY + dy)
-        }
-    }
-    
-    const handleMouseDown = e => {
-        setIsDragging(true)
-        isDown = true
-        mouseX = e.pageX
-        mouseY = e.pageY
-        document.addEventListener('mousemove', move)
-        
-        console.log(e.pageX) // 260 會慢一clicke ，例如第一次按就從0開始．．．
-        console.log(mouseX)
-    }
+    const [state, setState] = useState({
+        isDragging: false,
+        originX: 0,
+        originY: 0,
+        translateX: 0,
+        translateY: 0,
+        lastTranslateX: 0,
+        lastTranslateY: 0
+    })
 
-    const handleMouseUp = e => {
-        setIsDragging(false);
-        onPointerUp(e);
+    const handleMouseDown = useCallback(e => {
+        console.log(`MouseDown`)
+        setState(state => ({
+            ...state,
+            isDragging: true,
+            originX: e.pageX,
+            originY: e.pageY
+        }))
+        onPointerDown(e)
+    })
 
-        if (isDown) {
-            offsetX += e.pageX - mouseX
-            offsetY += e.pageY - mouseY
-        }
-        document.removeEventListener('mousemove',move)
-        isDown = false 
-    }
+    const handleMouseUp = useCallback(e => {
+        console.log("upup")
 
-    const handleMouseMove = e => {
+        setState(state => ({
+            ...state,
+            isDragging: false,
+            originX: 0,
+            originY: 0,
+            lastTranslateX: state.translateX,
+            lastTranslateY: state.translateY
+        })) 
+
+        onPointerUp(e)
+    })
+
+    const handleMouseMove = useCallback(e => {
+        //console.log("moving")
+        const translateX = e.pageX - state.originX + state.lastTranslateX
+        const translateY = e.pageY - state.originY + state.lastTranslateY
+
+        setState(state => ({
+            ...state,
+            translateX,
+            translateY
+        }), onDrag(translateX, translateY))
+
+        ///onDrag(translateX, translateY)
         onPointerMove(e);
-    }
+    })
 
     useEffect(() => {
         const element = ref.current
-        console.log("useEffect")
-        if (element) {
-          element.addEventListener("mousedown", handleMouseDown)
-          element.addEventListener("mousemove", handleMouseMove)
-          if (isDown) {
-              document.addEventListener("mouseup", handleMouseUp)
-          }
-    
-          // >>>>>>>>>> HOW is this working ?? not know <<<<<<<<<<<<<
-          return () => {
-            element.removeEventListener("mousedown", handleMouseDown)
-            element.removeEventListener("mousemove", handleMouseMove)
-            document.removeEventListener("mouseup", handleMouseUp)
-          }
+        //console.log(`>>>usdDrag useEffect on ${ref.current.nodeName} -- ${ref.current.id}`)
+        
+        element.addEventListener("mousedown", handleMouseDown)
+
+        if (state.isDragging) {
+            console.log(`add event listenr on document`)
+            document.addEventListener("mousemove", handleMouseMove)
+            document.addEventListener("mouseup", handleMouseUp)
         }
-      }, [...deps, isDown])
+
+        // >>>>>>>>>> HOW is this working ?? not know <<<<<<<<<<<<<
+        return () => {
+            console.log(`remove event listenr on document`)
+            element.removeEventListener("mousedown", handleMouseDown)
+            document.removeEventListener("mousemove", handleMouseMove)
+            document.removeEventListener("mouseup", handleMouseUp)
+        }
+      }, [...deps, state.isDragging])
     
     
 
 
-    return (
-        { isDragging }
-    )
+    return ({
+        isDragging: state.isDragging
+    })
 }
 
 export default useDrag

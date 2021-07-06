@@ -1,3 +1,5 @@
+//** Deprecated */
+
 function draggable(divMove, cb, divStay, arrowLeft, n) {
     
     console.log("Activating draggable------")

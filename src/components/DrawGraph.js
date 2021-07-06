@@ -2,9 +2,11 @@ import React, { useState, useRef, useEffect } from 'react'
 //import ArrowDrawer from './ArrowDrawer'
 import DrawVertex from './DrawVertex'
 import DrawArrow from './DrawArrow'
+import useDrawConnector from './useDrawConnector'
 
 /**
- * Represent middleware for drawwing arrows svg dynamically
+ * Represent middleware for drawwing arrows svg Initially
+ * Represent dynmaic render logic for multiple vertex's divs and arrows svg
  * Represent layout for vertex's div and direction arrows svg container
  * @param {object} graph instance of Graph
  * @returns {Component} DrawArrow
@@ -23,15 +25,15 @@ export default function DrawGraph({graph}) {
     divsRefs.current = [...new Array(length)].map(() => React.createRef())
     const arrowsRefs = useRef([])
     arrowsRefs.current = [...new Array(arrowsNumber)].map(() => React.createRef())
-
+    
     /**
      *  Initial Drawing of arrows svg
      */
     const didMountRef = useRef(false)
+    const { drawConnectorInitial } = useDrawConnector()
     useEffect(() => {
         //console.log(divsRefs.current)
-        console.log(arrowsRefs.current)
-        console.log("DrawGraph~")
+        //console.log(arrowsRefs.current)
         if (didMountRef.current) {
             arrowsRefs.current.forEach((arrow, i) => {
                 arrow = arrow.current
@@ -52,7 +54,7 @@ export default function DrawGraph({graph}) {
                     }
                 })
                 //console.log(divFrom, divTo, arrow)
-                drawConnector(divFrom, divTo, arrow)
+                drawConnectorInitial(divFrom, divTo, arrow)
             })
         }
         return(() => {
@@ -84,7 +86,7 @@ export default function DrawGraph({graph}) {
                 
                 let row = graphHeight - rank[name] // 代表該 vertex name 在第幾行
 
-                rowProcessedTimes[row] // Rocored to kwno current vertex is in n'th column
+                rowProcessedTimes[row] // Rocored to kwow current vertex is in n'th column
                     ? rowProcessedTimes[row] += 1
                     : rowProcessedTimes[row] = 1
                 let column = rowProcessedTimes[row]
@@ -132,18 +134,7 @@ export default function DrawGraph({graph}) {
  * 
  * @param {object} graph instance of Graph
  * @returns {int} arrowsNumber
- * @returns {Object} arrowsRecord -> 
- * {
- *    0 : {
- *       name: "c",
- *       incommingName: "b"
- *      },
- *    
- *    1 : {
- *       name: "b",
- *       incommingName: "a"
- *     }
- *  }
+ * @returns {Object} arrowsRecord
  */
 const arrowsInfoGetter = (graph) => {
 
@@ -165,35 +156,19 @@ const arrowsInfoGetter = (graph) => {
 
     return [arrowsRecord, counter]
 }
-
-
 /**
- * Set svg dom tag's attibue, represent svg drawer for arrows
- * @param {DOM} divFrom represent vertex div
- * @param {DOM} divTo represent vertex div
- * @param {DOM} arrowLeft represent arrow svg html tag: <g> -> <path>
+ * arrowsRecord = {
+ *    0 : {
+ *       name: "c",
+ *       incommingName: "b"
+ *      },
+ *    
+ *    1 : {
+ *       name: "b",
+ *       incommingName: "a"
+ *     }
+ *  }
  */
-const drawConnector = function(divFrom, divTo, arrowLeft) {
-    let fromPosnLeft = {
-      x: divFrom.offsetLeft - 8,
-      y: divFrom.offsetTop  + divFrom.offsetHeight / 2 + 10
-    };
-    let toPosnLeft = {
-      x: divTo.offsetLeft - 8,
-      y: divTo.offsetTop  + divTo.offsetHeight / 2 - 10
-    };
-    let dStrLeft =
-        "M" +
-        (fromPosnLeft.x      ) + "," + (fromPosnLeft.y) + " " +
-        "C" +
-        (fromPosnLeft.x - 100) + "," + (fromPosnLeft.y) + " " +
-        (toPosnLeft.x - 100) + "," + (toPosnLeft.y) + " " +
-        (toPosnLeft.x      ) + "," + (toPosnLeft.y);
-    arrowLeft.setAttribute("d", dStrLeft);
-     // console.log(`>>>Draw arrow from ${divFrom.id} to ${divTo.id}`)
-     //console.log(arrowLeft)
-     // console.log(divTo.offsetLeft)
-  };
 
 
 const translateTracker = (e) => {
