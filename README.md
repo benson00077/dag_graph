@@ -60,11 +60,11 @@ Give vertex name and it's incomming/outgoing vertices' name, to get the graph (D
 │   ├── DrawVertex.js      ### Represent vertex div's UI && drag logic on div and arrows by useDrag
 │   ├── useDrag.js         ### Represent Dragging functionality implementation hooks -- for vertex's div
 │   ├── ArrowDrawer.js     #### Deprecated - Render direction arrow || Implement drag-n-drop logic
-│   ├── draggable.js       #### Deprecated - Helper function for ArrowDrawer
-│   └── dag               
-│       ├── dagClass.js   # parent class
-│       ├── graphClass.js # sibling class
-│       └── dag_tester.js
+│   └── draggable.js       #### Deprecated - Helper function for ArrowDrawer
+├── dag               
+│    ├── dagClass.js   # parent class
+│    ├── graphClass.js # sibling class
+│    └── dag_tester.js
 └── index.js
 ```
 

@@ -64,9 +64,9 @@ const useDrag = (ref, deps = [], options) => {
             ...state,
             translateX,
             translateY
-        }), onDrag(translateX, translateY))
+        }))
 
-        ///onDrag(translateX, translateY)
+        onDrag(translateX, translateY)
         onPointerMove(e);
     })
 

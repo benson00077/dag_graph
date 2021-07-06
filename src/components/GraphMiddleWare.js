@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import VertexInput from './VertexInput';
 import CreateVertex from './CreateVertex'
 
-const Graph = require('./dag/graphClass')
+const Graph = require('../dag/graphClass')
 
 const graph = new Graph();
 
