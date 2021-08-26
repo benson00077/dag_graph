@@ -30,7 +30,7 @@ const useDrag = (ref, deps = [], options) => {
     })
 
     const handleMouseDown = useCallback(e => {
-        console.log(`MouseDown`)
+        //console.log(`MouseDown`)
         setState(state => ({
             ...state,
             isDragging: true,
@@ -41,7 +41,7 @@ const useDrag = (ref, deps = [], options) => {
     })
 
     const handleMouseUp = useCallback(e => {
-        console.log("upup")
+        //console.log("upup")
 
         setState(state => ({
             ...state,
@@ -77,14 +77,14 @@ const useDrag = (ref, deps = [], options) => {
         element.addEventListener("mousedown", handleMouseDown)
 
         if (state.isDragging) {
-            console.log(`add event listenr on document`)
+            //console.log(`add event listenr on document`)
             document.addEventListener("mousemove", handleMouseMove)
             document.addEventListener("mouseup", handleMouseUp)
         }
 
         // >>>>>>>>>> HOW is this working ?? not know <<<<<<<<<<<<<
         return () => {
-            console.log(`remove event listenr on document`)
+            //console.log(`remove event listenr on document`)
             element.removeEventListener("mousedown", handleMouseDown)
             document.removeEventListener("mousemove", handleMouseMove)
             document.removeEventListener("mouseup", handleMouseUp)

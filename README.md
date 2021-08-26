@@ -35,8 +35,8 @@ Give vertex name and it's incomming/outgoing vertices' name, to get the graph (D
 | ------ | ------ | ------ |
 | To support many times of vertices creation | state lost after re-input form | done -- by hoisting state |
 | SVG direction arrow render  |  not in right place | fixxed -- by CSS `position absolute` and parent's node's `position relative` |
-| drag-and-drop on vertex and svg arrow | 1.svg arrow not drag-and-drop with divs | 1. DrawGraph.js useRef → forward down to DrawArrow.js, which render JSX → forward that arrows ref to DrawVertex.js → access arrows ref DOMin DrawVertex.js → ❓ BUT HOW DOES THAT EVEN WORK ❓ 
-| ㄴ                                     | 2.vertex move randomly when dragging    | See [Issue2](https://github.com/benson00077/dag_graph/issues/2)<br/>REMEMBER: setState works like asynchronous function[SeeMore](https://medium.com/@brianwu291/learn-basic-react-setstate-function-2aec5018a38a)
+| drag-and-drop on vertex and svg arrow | 1.svg arrow not drag-and-drop with divs | 1. DrawGraph.js useRef <br/>→ forward down to DrawArrow.js, which render JSX <br/>→ forward that arrows ref to DrawVertex.js <br/>→ access arrows ref DOMin DrawVertex.js <br/> |
+| ㄴ                                     | 2.vertex move randomly when dragging    | See [Issue2](https://github.com/benson00077/dag_graph/issues/2)<br/>REMEMBER: setState works like asynchronous function [SeeMore](https://medium.com/@brianwu291/learn-basic-react-setstate-function-2aec5018a38a) |
 | Throw ERROR when cycle DAG| |
 
 
@@ -52,7 +52,7 @@ Give vertex name and it's incomming/outgoing vertices' name, to get the graph (D
 │       ├── _variables.scss
 │       └── base.scss
 ├── components
-│   ├── GraphMiddleWare.js # Represent Graph obj's storage layer
+│   ├── GraphMiddleWare.js # Represent Graph obj's storage layer && call positionContext.js provider
 │   ├── VertexInput.js     ## Represent UI Layer -- user's input
 │   ├── CreateVertex.js    ## Represent graph instance creation layer
 │   ├── DrawGraph.js       ### Represent layout for vertex's div and direction arrows svg && Init Drawing on svg arrows
@@ -126,7 +126,7 @@ Give vertex name and it's incomming/outgoing vertices' name, to get the graph (D
 ## Back end
 - class Dag, sub class graph inplementation
 - Refactoring on `give_rank()`: no use of Recurssive! Access by topsorted array instead. 
-- ❓⏰ In [dag_tester](./src/components/dag/dag_tester.js): 重複創建實例在 entry function 裡面，反而 抓不到 graph instance，why?
+- ❓⏰ In [dag_tester](./src/components/dag/dag_tester.js): 重複創建實例在 entry function 裡面，反而 抓不到 graph instance，why? 是不是物件內 this 的問題？
 - ❓🆘 思考：`this.giveRank()` 是個只給物件內部取用的方法，而不是要給實例使用的函數，有沒有更好的寫法來保護？例如`static`關鍵字？[Issue1](https://github.com/benson00077/dag_graph/issues/1)
 - ❓問題：在node裡，為何 我在 B檔案 require A檔案的內容進來後會 run A檔案的內容？例如 A檔案有 console.log，在 terminal run B檔案的時候，也會出現出現在 terminal。我以為 module.exports 只是傳物件的參照？
 

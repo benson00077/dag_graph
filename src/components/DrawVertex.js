@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import useDrag from './useDrag'
 import useDrawConnector from './useDrawConnector'
+import { PositionContext } from './common/PositionContext'
 
 /**
  * Represent vertex div's UI
@@ -12,14 +13,20 @@ import useDrawConnector from './useDrawConnector'
  * @param {Array} forwardedArrowsRefs [..., {current: dom} ] -- dom for all arrows svg  
  * @returns {JSX} div UI for one vertex 
  */
-export default function DrawVertex({name, column, row, forwardedRef, forwardedArrowsRefs}) {
+export default function DrawVertex({name, column, row, forwardedRef, forwardedArrowsRefs, isDefaultGraph}) {
     
-    let topStyle = `${150 + 150 * row}px`
-    let leftStyle = `${150 * column}px`
+    let topPosition = 150 + 150 * row
+    let leftPosition = 150 * column
+    let topStyle = topPosition + 'px'
+    let leftStyle = leftPosition + 'px'
 
-    
+    console.log(`redner DrawVertex`)
+
+    const [isDisplaced, setIsDisplaced] = useState(false)
+    const [isMouseUp, setIsMouseUp] = useState(false)
+    let [positionMap, setPositionMap] = useContext(PositionContext)
     const [translate, setTranslate] = useState({ x: 0, y: 0 })
-    const { drawConnectorDynamic } = useDrawConnector()
+    const { drawConnectorDynamic, connectorRecord } = useDrawConnector()
 
     const handleDrag = (newX, newY) => {
         setTranslate({
@@ -27,24 +34,53 @@ export default function DrawVertex({name, column, row, forwardedRef, forwardedAr
             y: newY
         })
         let relatedArrows = relatedArrowsDetector(forwardedArrowsRefs, name)
-        drawConnectorDynamic(relatedArrows, name, forwardedRef.current, translate)
+        drawConnectorDynamic(relatedArrows, name, forwardedRef.current, translate) // but translate not new one? 
     }
 
     const { isDragging } = useDrag(forwardedRef, [translate], {
-        onDrag: handleDrag
-    })
+        onDrag: handleDrag,
+        onPointerUp: () => setIsMouseUp(!isMouseUp),
+        onPointerDown: () => {
+          setIsDisplaced(true)
+          if (isDefaultGraph) {
+            setTranslate({ x: 0, y: 0})
+            console.log('isDefaultGraph')
+          }
+        }
+    }) 
 
+    let style = 
+      isDefaultGraph
+      ? { position:`absolute`, top: `${topStyle}`, left: `${leftStyle}` }
+      : { position:`absolute`, top: `${topStyle}`, left: `${leftStyle}`,
+          transform: `translateX(${translate.x}px) translateY(${translate.y}px)` }
+
+    useEffect(() => {
+      // 更新 div 剛創建、以及拖曳後 的位置狀態到 PositoinContext
+      // Dependency: 拖曳時，以及按了按鈕使切換預設/拖曳位置時⋯⋯兩個情況都會更新 context 
+      
+      setPositionMap(prevState => ({
+        ...prevState,
+        [name]: {
+          isDisplaced: isDisplaced,
+          positionOrigin: [topPosition, leftPosition],
+          positionNew: isDefaultGraph ? [topPosition, leftPosition] : [topPosition + translate.x, leftPosition + translate.y],
+          translate: isDefaultGraph ? {x:0, y:0} : translate
+        }
+      }))
+      
+      console.group("Child")
+      console.log(positionMap) 
+      console.groupEnd()
+    }, [isDefaultGraph, isMouseUp])
 
     return (
         <div 
-            ref = {forwardedRef}
-            style={{
-                position:`absolute`, top: `${topStyle}`, left: `${leftStyle}`,
-                transform: `translateX(${translate.x}px) translateY(${translate.y}px)`
-            }} 
+            ref={forwardedRef}
+            style={style} 
             className="vertex"
-            id={name}>
-                {isDragging ? `${name} is now 🚀` : name}
+            id={name} >
+              {isDragging ? `${name} is now 🚀` : name}
         </div>
     )
     

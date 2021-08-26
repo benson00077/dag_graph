@@ -1,4 +1,5 @@
 import React, {useRef, useEffect, createContext} from 'react'
+import useDrawConnector from './useDrawConnector'
 
 /**
  * Represent arrows svg container html tag (not drawwing on UI)
@@ -7,16 +8,7 @@ import React, {useRef, useEffect, createContext} from 'react'
  * @param {obejct} forwardedRef
  * @returns 
  */
-export default function DrawArrow({incommingName, name, forwardedRef}) {
-    
-    //const divRef = useRef()
-    
-    // useEffect(() => {
-    //     let toDiv = forwardedDivRef.current
-    //     console.log(toDiv)
-    // })
-
-    console.log('DrawArrow')
+export default function DrawArrow({ incommingName, name, forwardedRef }) {
 
     return (
         <g  fill="none" stroke="black" strokeWidth="2" markerEnd="url(#arrowhead)" 
