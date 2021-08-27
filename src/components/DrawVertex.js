@@ -20,13 +20,11 @@ export default function DrawVertex({name, column, row, forwardedRef, forwardedAr
     let topStyle = topPosition + 'px'
     let leftStyle = leftPosition + 'px'
 
-    console.log(`redner DrawVertex`)
-
     const [isDisplaced, setIsDisplaced] = useState(false)
     const [isMouseUp, setIsMouseUp] = useState(false)
     let [positionMap, setPositionMap] = useContext(PositionContext)
     const [translate, setTranslate] = useState({ x: 0, y: 0 })
-    const { drawConnectorDynamic, connectorRecord } = useDrawConnector()
+    const { drawConnectorDynamic } = useDrawConnector()
 
     const handleDrag = (newX, newY) => {
         setTranslate({
@@ -42,10 +40,6 @@ export default function DrawVertex({name, column, row, forwardedRef, forwardedAr
         onPointerUp: () => setIsMouseUp(!isMouseUp),
         onPointerDown: () => {
           setIsDisplaced(true)
-          if (isDefaultGraph) {
-            setTranslate({ x: 0, y: 0})
-            console.log('isDefaultGraph')
-          }
         }
     }) 
 
@@ -69,7 +63,7 @@ export default function DrawVertex({name, column, row, forwardedRef, forwardedAr
         }
       }))
       
-      console.group("Child")
+      console.group("Child -- DrawVertex")
       console.log(positionMap) 
       console.groupEnd()
     }, [isDefaultGraph, isMouseUp])

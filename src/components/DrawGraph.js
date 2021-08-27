@@ -2,8 +2,6 @@ import React, { useState, useRef, useEffect, useContext } from 'react'
 //import ArrowDrawer from './ArrowDrawer'
 import DrawVertex from './DrawVertex'
 import DrawArrow from './DrawArrow'
-import useDrawConnector from './useDrawConnector'
-import { PositionContext } from './common/PositionContext'
 
 /**
  * Represent middleware for drawwing arrows svg Initially
@@ -13,14 +11,14 @@ import { PositionContext } from './common/PositionContext'
  * @returns {Component} DrawArrow
  * @returns {Component} DrawVertex
  */
-export default function DrawGraph({graph}) {
+export default function DrawGraph({graph, topSorted}) {
     
-    let topSorted = [...graph["topSorted"]]
+    console.log(topSorted)
     let length = topSorted.length
     let [arrowsRecord, arrowsNumber] = arrowsInfoGetter(graph)    
 
     // for btn restting vertex position back to default place 
-    let [isDefaultGraph, setIsDefaultGraph] = useState(null)
+    let [isDefaultGraph, setIsDefaultGraph] = useState(false)
 
     // Vertex ref & Arrows ref for DOM (drag-n-drop & arrow connetor)
     const divsRefs = useRef([])
@@ -28,77 +26,13 @@ export default function DrawGraph({graph}) {
     const arrowsRefs = useRef([])
     arrowsRefs.current = [...new Array(arrowsNumber)].map(() => React.createRef())
 
-    
-    /**
-     *  Initial Drawing of arrows svg
-     */
-    const [positionMap, setPositionMap] = useContext(PositionContext) 
-    const didMountRef = useRef(false)
-    const { drawConnectorInitial } = useDrawConnector()
-    useEffect(() => {
-      // Skip effect upon the initial render (when user not yet create any vertex)
-      if (didMountRef.current) {
-            arrowsRefs.current.forEach((arrow, i) => {
-                arrow = arrow.current
-                let from = arrow.getAttribute("vertex_from")
-                let to = arrow.getAttribute("vertex_to")
-                let divFrom = null 
-                let divTo = null
-                
-                divsRefs.current.forEach((div, i) => {
-                  div = div.current
-                  if (div.id === from) {
-                    divFrom = div
-                    return 
-                  }
-                  if (div.id === to) {
-                    divTo = div
-                    return 
-                  }
-                })
-                
-
-                // //if (isDefaultGraph) { translateMap = { divFrom: {x:0,y:0}, divTo: {x:0,y:0}} }  
-                // let translateMap = {
-                //   divFrom: { x:0, y:0 },
-                //   divTo: { x:0, y:0 }
-                // } // 做為 drawConnectorInitial 的第四個參數，代表已經拖曳過的既有vertex的 偏移量，在該函數內會計算、抵銷偏移量使回到預設原位
-
-                // if (positionMap[from]) {
-                //   if (positionMap[from].isDisplaced) {
-                //     translateMap.divFrom = {...positionMap[from].translate}
-                //   }
-                // }
-                // if (positionMap[to]){
-                //   if (positionMap[to].isDisplaced) {
-                //     translateMap.divTo = {...positionMap[from].translate}
-                //   }
-                // }
-
-                // 與上面代換後效果類似
-                let translateMap = {
-                  divFrom: positionMap[from] ? positionMap[from].translate : {x:0,y:0},
-                  divTo: positionMap[to] ? positionMap[to].translate : {x:0,y:0}
-                }
-                
-                console.group("Father")
-                console.log(positionMap) // 跟 Child 更新的 PositionContext 的不同步！
-                console.log(translateMap)
-                console.groupEnd()
-                drawConnectorInitial(divFrom, divTo, arrow, translateMap)
-            })
-        }
-        return(() => {
-            didMountRef.current = true
-        })
-    }, [length, isDefaultGraph]) 
-
     const arrowRenderer = (arrowsRecord, arrowsNumber) => {
       return (
         [...Array(arrowsNumber)].map((e, i) => (
           <DrawArrow 
             incommingName={arrowsRecord[i].incommingName} name={arrowsRecord[i].name} key={i}
-            forwardedRef={arrowsRefs.current[i]} />
+            forwardedRef={arrowsRefs.current[i]}
+            forwardedDivsRef={divsRefs.current} />
         ))
       )
     }
@@ -171,7 +105,7 @@ const arrowsInfoGetter = (graph) => {
     let arrowsRecord = {};
     let counter = 0;
 
-    [...topSorted].reverse().map((name,i) => {
+    topSorted.reverse().map((name,i) => {
         let incommingNames = graph["vertices"][name]["incomingNames"]
         incommingNames.map((incommingName, j) => {
           

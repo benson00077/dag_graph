@@ -55,7 +55,7 @@ export default function CreateVertex({verticesInput, graph}) {
 
     return (
         <Fragment>
-            <DrawGraph graph={graph}/>
+            <DrawGraph graph={graph} topSorted={graph["topSorted"]}/>
         </Fragment>
     )
 }
