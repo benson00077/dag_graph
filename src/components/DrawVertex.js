@@ -77,7 +77,7 @@ export default function DrawVertex({ name, column, row, forwardedRef, forwardedA
         isDisplaced: isDisplaced,
         positionOrigin: [topPosition, leftPosition],
         positionNew: isDefaultGraph ? [topPosition, leftPosition] : [topPosition + translate.x, leftPosition + translate.y],
-        translate: isDefaultGraph ? { x: 0, y: 0 } : translate
+        translate: isDefaultGraph && !isDragged ? { x: 0, y: 0 } : translate
       }
     }))
 
