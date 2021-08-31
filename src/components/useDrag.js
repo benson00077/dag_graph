@@ -8,17 +8,17 @@ import { useState, useEffect, useCallback } from 'react'
  * @returns {bool} isDragging
  */
 const useDrag = (ref, deps = [], options) => {
-   
+
     //try {console.log(`>>>useDrag Rendering on ${ref.current.nodeName} -- ${ref.current.id}`)} catch {console.log(">>>useDrag")}
 
     // init for cb functions
     const {
-        onPointerDown = () => {},
-        onPointerUp = () => {}, 
-        onPointerMove = () => {},
-        onDrag = () => {}
+        onPointerDown = () => { },
+        onPointerUp = () => { },
+        onPointerMove = () => { },
+        onDrag = () => { }
     } = options
-    
+
     const [state, setState] = useState({
         isDragging: false,
         originX: 0,
@@ -50,7 +50,7 @@ const useDrag = (ref, deps = [], options) => {
             originY: 0,
             lastTranslateX: state.translateX,
             lastTranslateY: state.translateY
-        })) 
+        }))
 
         onPointerUp(e)
     })
@@ -73,7 +73,7 @@ const useDrag = (ref, deps = [], options) => {
     useEffect(() => {
         const element = ref.current
         //console.log(`>>>usdDrag useEffect on ${ref.current.nodeName} -- ${ref.current.id}`)
-        
+
         element.addEventListener("mousedown", handleMouseDown)
 
         if (state.isDragging) {
@@ -89,9 +89,9 @@ const useDrag = (ref, deps = [], options) => {
             document.removeEventListener("mousemove", handleMouseMove)
             document.removeEventListener("mouseup", handleMouseUp)
         }
-      }, [...deps, state.isDragging])
-    
-    
+    }, [...deps, state.isDragging])
+
+
 
 
     return ({
