@@ -8,7 +8,7 @@ import { useState, useEffect, useCallback } from 'react'
  * @returns {bool} isDragging
  */
 const useDrag = (ref, deps = [], options) => {
-   
+
     //try {console.log(`>>>useDrag Rendering on ${ref.current.nodeName} -- ${ref.current.id}`)} catch {console.log(">>>useDrag")}
 
     // init for cb functions

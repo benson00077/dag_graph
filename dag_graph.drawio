@@ -29,11 +29,8 @@
                 <mxCell id="2WGV7Rzfy_3PZK6U7CEp-8" value="CreateVertex" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="400" y="120" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="2WGV7Rzfy_3PZK6U7CEp-19" value="Layout (call multiple arrow &amp;amp; vertex comp)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-                    <mxGeometry x="525" y="240" width="230" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="2WGV7Rzfy_3PZK6U7CEp-20" value="Init Drawing: useEffect +&amp;nbsp; useDrawConnector" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-                    <mxGeometry x="525" y="260" width="250" height="20" as="geometry"/>
+                <mxCell id="2WGV7Rzfy_3PZK6U7CEp-19" value="Layout" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="525" y="240" width="55" height="20" as="geometry"/>
                 </mxCell>
                 <mxCell id="2WGV7Rzfy_3PZK6U7CEp-25" value="Dynamic Drawing: state of drag translate + useDrawConnector" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="525" y="370" width="340" height="20" as="geometry"/>
@@ -111,20 +108,20 @@
                 <mxCell id="3" value="PositionContext" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
                     <mxGeometry x="560" y="40" width="120" height="70" as="geometry"/>
                 </mxCell>
-                <mxCell id="13" value="Context" style="text;html=1;strokeColor=#2D7600;fillColor=#60a917;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="13" value="Context" style="text;html=1;strokeColor=#2D7600;fillColor=#60a917;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="680" y="30" width="40" height="20" as="geometry"/>
                 </mxCell>
-                <mxCell id="14" value="Context" style="text;html=1;strokeColor=#2D7600;fillColor=#60a917;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="14" value="Context" style="text;html=1;strokeColor=#2D7600;fillColor=#60a917;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="420" y="30" width="40" height="20" as="geometry"/>
                 </mxCell>
-                <mxCell id="15" value="Context" style="text;html=1;strokeColor=#2D7600;fillColor=#60a917;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="15" value="Context" style="text;html=1;strokeColor=#2D7600;fillColor=#60a917;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="520" y="350" width="40" height="20" as="geometry"/>
                 </mxCell>
-                <mxCell id="16" value="Context" style="text;html=1;strokeColor=#2D7600;fillColor=#60a917;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" vertex="1" parent="1">
-                    <mxGeometry x="520" y="220" width="40" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="17" value="Context" style="text;html=1;strokeColor=#2D7600;fillColor=#60a917;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="17" value="Context" style="text;html=1;strokeColor=#2D7600;fillColor=#60a917;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="160" y="350" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" value="Init Drawing: &lt;br&gt;useEffect +&amp;nbsp; &lt;br&gt;useDrawConnector" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="30" y="470" width="140" height="20" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

@@ -37,6 +37,8 @@ Give vertex name and it's incomming/outgoing vertices' name, to get the graph (D
 | SVG direction arrow render  |  not in right place | fixxed -- by CSS `position absolute` and parent's node's `position relative` |
 | drag-and-drop on vertex and svg arrow | 1.svg arrow not drag-and-drop with divs | 1. DrawGraph.js useRef <br/>→ forward down to DrawArrow.js, which render JSX <br/>→ forward that arrows ref to DrawVertex.js <br/>→ access arrows ref DOMin DrawVertex.js <br/> |
 | ㄴ                                     | 2.vertex move randomly when dragging    | See [Issue2](https://github.com/benson00077/dag_graph/issues/2)<br/>REMEMBER: setState works like asynchronous function [SeeMore](https://medium.com/@brianwu291/learn-basic-react-setstate-function-2aec5018a38a) |
+| ㄴ                                     | 3.add vertex and the dragged ones go back to default place  | See [Issue4](https://github.com/benson00077/dag_graph/issues/4)'s 問題一 & 問題三 <br/> 零件更新時序問題|
+| ㄴ                                     | 4.Back 2 default graph btn and then drag -- leads to misplacement    | TBD: isDefaultGraph to be contextAPI, passed to useDrag. So that dragging on defaultGraph would re-init previous dragged position state|
 | Throw ERROR when cycle DAG| |
 
 

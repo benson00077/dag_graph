@@ -29,6 +29,10 @@ export default function DrawVertex({
   const [isDisplaced, setIsDisplaced] = useState(false);
   const [isMouseUp, setIsMouseUp] = useState(false);
   let [positionMap, setPositionMap] = useContext(PositionContext);
+  const [positionDefault, setPositionDefault] = useState({
+    top: 150 + 150 * row,
+    left: 150 * column,
+  });
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
   const { drawConnectorDynamic } = useDrawConnector();
 
@@ -58,9 +62,19 @@ export default function DrawVertex({
         transform: `translateX(${translate.x}px) translateY(${translate.y}px)`,
       };
 
+  // let style = {
+  //   position: `absolute`,
+  //   top: `${topStyle}`,
+  //   left: `${leftStyle}`,
+  //   transform: `translateX(${translate.x}px) translateY(${translate.y}px)`,
+  // };
+
   useEffect(() => {
     // 更新 div 剛創建、以及拖曳後 的位置狀態到 PositoinContext
     // Dependency: 拖曳時，以及按了按鈕使切換預設/拖曳位置時⋯⋯兩個情況都會更新 context
+    console.log(
+      `name: ${name}, row: ${row}, column: ${column}, positionDefault: ${positionDefault.top} ${positionDefault.left}`
+    );
 
     setPositionMap((prevState) => ({
       ...prevState,
