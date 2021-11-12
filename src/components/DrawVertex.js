@@ -20,6 +20,7 @@ export default function DrawVertex({
   forwardedRef,
   forwardedArrowsRefs,
   isDefaultGraph,
+  setIsDefaultGraph,
 }) {
   let topPosition = 150 + 150 * row;
   let leftPosition = 150 * column;
@@ -41,43 +42,47 @@ export default function DrawVertex({
     drawConnectorDynamic(relatedArrows, name, forwardedRef.current, translate); // but translate not new one?
   };
 
-  const { isDragging } = useDrag(forwardedRef, [translate], {
+  const { isDragging } = useDrag(forwardedRef, [translate, isDefaultGraph], {
     onDrag: handleDrag,
-    onPointerUp: () => setIsMouseUp(!isMouseUp),
+    onPointerUp: () => {
+      setIsMouseUp(!isMouseUp);
+      setIsDefaultGraph(false);
+    },
     onPointerDown: () => {
       setIsDisplaced(true);
     },
   });
 
-  let style = isDefaultGraph
-    ? { position: `absolute`, top: `${topStyle}`, left: `${leftStyle}` }
-    : {
-        position: `absolute`,
-        top: `${topStyle}`,
-        left: `${leftStyle}`,
-        transform: `translateX(${translate.x}px) translateY(${translate.y}px)`,
-      };
+  let style = {
+    position: `absolute`,
+    top: `${topStyle}`,
+    left: `${leftStyle}`,
+    transform: `translateX(${translate.x}px) translateY(${translate.y}px)`,
+  };
 
   useEffect(() => {
-    // 更新 div 剛創建、以及拖曳後 的位置狀態到 PositoinContext
-    // Dependency: 拖曳時，以及按了按鈕使切換預設/拖曳位置時⋯⋯兩個情況都會更新 context
-
     setPositionMap((prevState) => ({
       ...prevState,
       [name]: {
         isDisplaced: isDisplaced,
         positionOrigin: [topPosition, leftPosition],
-        positionNew: isDefaultGraph
-          ? [topPosition, leftPosition]
-          : [topPosition + translate.x, leftPosition + translate.y],
-        translate: isDefaultGraph ? { x: 0, y: 0 } : translate,
+        positionNew: [topPosition + translate.x, leftPosition + translate.y],
+        translate: translate,
       },
     }));
 
     console.group("Child -- DrawVertex");
     console.log(positionMap);
     console.groupEnd();
-  }, [isDefaultGraph, isMouseUp]);
+  }, [isMouseUp]);
+
+  useEffect(() => {
+    if (isDefaultGraph) {
+      setTranslate({ x: 0, y: 0 });
+    } else {
+      setTranslate(positionMap[name].translate); ///
+    }
+  }, [isDefaultGraph]);
 
   return (
     <div ref={forwardedRef} style={style} className="vertex" id={name}>

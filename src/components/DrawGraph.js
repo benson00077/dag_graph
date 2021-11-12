@@ -18,7 +18,7 @@ export default function DrawGraph({ graph, topSorted }) {
   let [arrowsRecord, arrowsNumber] = arrowsInfoGetter(graph);
 
   // for btn restting vertex position back to default place
-  let [isDefaultGraph, setIsDefaultGraph] = useState(null);
+  let [isDefaultGraph, setIsDefaultGraph] = useState(true);
 
   // Vertex ref & Arrows ref for DOM (drag-n-drop & arrow connetor)
   const divsRefs = useRef([]);
@@ -36,6 +36,7 @@ export default function DrawGraph({ graph, topSorted }) {
         key={i}
         forwardedRef={arrowsRefs.current[i]}
         forwardedDivsRef={divsRefs.current}
+        isDefaultGraph={isDefaultGraph}
       />
     ));
   };
@@ -61,6 +62,7 @@ export default function DrawGraph({ graph, topSorted }) {
             forwardedRef={divsRefs.current[i]}
             forwardedArrowsRefs={arrowsRefs.current}
             isDefaultGraph={isDefaultGraph}
+            setIsDefaultGraph={setIsDefaultGraph}
           />
         );
       })
