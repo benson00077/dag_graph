@@ -21,10 +21,6 @@ export default function DrawArrow({
 
   //關注點分離，畫箭頭的功能 從 DrawGraph 拿回到 DrawArrow
   useEffect(() => {
-    console.group("Child -- DrawArrow");
-    console.log(positionMap);
-    console.groupEnd();
-
     let divRelatedRefMap = { from: null, to: null };
     for (let div of forwardedDivsRef) {
       div = div.current;

@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useContext } from "react";
+import { PositionContext } from "./common/PositionContext";
 
 /**
  * Represent Dragging functionality implementation hooks -- for vertex's div
@@ -27,9 +28,9 @@ const useDrag = (ref, deps = [], options) => {
     lastTranslateX: 0,
     lastTranslateY: 0,
   });
+  let [positionMap, setPositionMap] = useContext(PositionContext);
 
-  const handleMouseDown = useCallback((e) => {
-    //console.log(`MouseDown`)
+  const handleMouseDown = (e) => {
     setState((state) => ({
       ...state,
       isDragging: true,
@@ -37,11 +38,9 @@ const useDrag = (ref, deps = [], options) => {
       originY: e.pageY,
     }));
     onPointerDown(e);
-  });
+  };
 
-  const handleMouseUp = useCallback((e) => {
-    //console.log("upup")
-
+  const handleMouseUp = (e) => {
     setState((state) => ({
       ...state,
       isDragging: false,
@@ -52,10 +51,9 @@ const useDrag = (ref, deps = [], options) => {
     }));
 
     onPointerUp(e);
-  });
+  };
 
-  const handleMouseMove = useCallback((e) => {
-    //console.log("moving")
+  const handleMouseMove = (e) => {
     const translateX = e.pageX - state.originX + state.lastTranslateX;
     const translateY = e.pageY - state.originY + state.lastTranslateY;
 
@@ -67,23 +65,19 @@ const useDrag = (ref, deps = [], options) => {
 
     onDrag(translateX, translateY);
     onPointerMove(e);
-  });
+  };
 
   useEffect(() => {
     const element = ref.current;
-    //console.log(`>>>usdDrag useEffect on ${ref.current.nodeName} -- ${ref.current.id}`)
-
     element.addEventListener("mousedown", handleMouseDown);
 
     if (state.isDragging) {
-      //console.log(`add event listenr on document`)
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
     }
 
     // >>>>>>>>>> HOW is this working ?? not know <<<<<<<<<<<<<
     return () => {
-      //console.log(`remove event listenr on document`)
       element.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
@@ -92,7 +86,7 @@ const useDrag = (ref, deps = [], options) => {
 
   useEffect(() => {
     //TBD
-    const [translate, isDefaultGraph] = [...deps];
+    const [translate, isDefaultGraph, name] = [...deps];
     if (isDefaultGraph) {
       setState((state) => ({
         ...state,
@@ -104,14 +98,18 @@ const useDrag = (ref, deps = [], options) => {
     } else {
       setState((state) => ({
         ...state,
-        translateX: translate.x,
-        translateY: translate.y,
+        translateX: positionMap[name].translate.x,
+        translateY: positionMap[name].translate.y,
+        lastTranslateX: positionMap[name].translate.x,
+        lasttranslateY: positionMap[name].translate.y,
       }));
     }
   }, [deps[1]]);
 
   return {
     isDragging: state.isDragging,
+    translateX: state.translateX,
+    translateY: state.translateY,
   };
 };
 

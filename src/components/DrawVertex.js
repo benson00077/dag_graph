@@ -33,25 +33,40 @@ export default function DrawVertex({
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
   const { drawConnectorDynamic } = useDrawConnector();
 
-  const handleDrag = (newX, newY) => {
-    setTranslate({
-      x: newX,
-      y: newY,
-    });
+  const drawArrowonDrag = (newX, newY) => {
+    let newTrans = { x: newX, y: newY };
     let relatedArrows = relatedArrowsDetector(forwardedArrowsRefs, name);
-    drawConnectorDynamic(relatedArrows, name, forwardedRef.current, translate); // but translate not new one?
+    setTranslate(newTrans);
+    drawConnectorDynamic(relatedArrows, name, forwardedRef.current, newTrans);
   };
 
-  const { isDragging } = useDrag(forwardedRef, [translate, isDefaultGraph], {
-    onDrag: handleDrag,
-    onPointerUp: () => {
-      setIsMouseUp(!isMouseUp);
-      setIsDefaultGraph(false);
-    },
-    onPointerDown: () => {
-      setIsDisplaced(true);
-    },
-  });
+  const ctxUpdateonMouseUp = () => {
+    setPositionMap((prevState) => ({
+      ...prevState,
+      [name]: {
+        isDisplaced: isDisplaced,
+        positionOrigin: [topPosition, leftPosition],
+        positionNew: [topPosition + translate.x, leftPosition + translate.y],
+        translate: translate,
+      },
+    }));
+  };
+
+  const { isDragging, translateX, translateY } = useDrag(
+    forwardedRef,
+    [translate, isDefaultGraph, name],
+    {
+      onDrag: drawArrowonDrag,
+      onPointerUp: () => {
+        ctxUpdateonMouseUp();
+        setIsMouseUp(!isMouseUp);
+        setIsDefaultGraph(false);
+      },
+      onPointerDown: () => {
+        setIsDisplaced(true);
+      },
+    }
+  );
 
   let style = {
     position: `absolute`,
@@ -70,11 +85,7 @@ export default function DrawVertex({
         translate: translate,
       },
     }));
-
-    console.group("Child -- DrawVertex");
-    console.log(positionMap);
-    console.groupEnd();
-  }, [isMouseUp]);
+  }, []);
 
   useEffect(() => {
     if (isDefaultGraph) {
@@ -87,6 +98,8 @@ export default function DrawVertex({
   return (
     <div ref={forwardedRef} style={style} className="vertex" id={name}>
       {isDragging ? `${name} is now 🚀` : name}
+      <p>{"X :" + translateX}</p>
+      <p>{"Y :" + translateY}</p>
     </div>
   );
 }
