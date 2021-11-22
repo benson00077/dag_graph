@@ -10,7 +10,8 @@ import { PositionContext } from "./common/PositionContext";
  */
 const useDrag = (ref, deps = [], options) => {
   //try {console.log(`>>>useDrag Rendering on ${ref.current.nodeName} -- ${ref.current.id}`)} catch {console.log(">>>useDrag")}
-  const [graphState, name] = [...deps];
+
+  const isDefaultGraph = [...deps];
 
   // init for cb functions
   const {
@@ -50,9 +51,10 @@ const useDrag = (ref, deps = [], options) => {
       lastTranslateX: state.translateX,
       lastTranslateY: state.translateY,
     }));
-    //const translateX = e.pageX - state.originX + state.lastTranslateX;
-    //const translateY = e.pageY - state.originY + state.lastTranslateY;
-    onPointerUp();
+
+    const translateX = e.pageX - state.originX + state.lastTranslateX;
+    const translateY = e.pageY - state.originY + state.lastTranslateY;
+    onPointerUp(translateX, translateY);
   };
 
   const handleMouseMove = (e) => {
@@ -86,31 +88,29 @@ const useDrag = (ref, deps = [], options) => {
     };
   }, [[...deps], state.isDragging]);
 
-  useEffect(() => {
-    const { isInitGraph, isDefaultGraph, isDraggedGraph, currentDragTarget } =
-      graphState;
+  // useEffect(() => {
+  //   console.log(131);
+  //   const [translate, isDefaultGraph, name] = [...deps];
+  //   if (isDefaultGraph) {
+  //     setState((state) => ({
+  //       ...state,
+  //       translateX: 0,
+  //       translateY: 0,
+  //       lastTranslateX: 0,
+  //       lastTranslateY: 0,
+  //     }));
+  //   } else {
+  //     setState((state) => ({
+  //       ...state,
+  //       translateX: positionMap[name].translate.x,
+  //       translateY: positionMap[name].translate.y,
+  //       lastTranslateX: positionMap[name].translate.x,
+  //       lasttranslateY: positionMap[name].translate.y,
+  //     }));
+  //   }
+  // }, [deps[1]]);
 
-    if (isInitGraph) return;
-    if (isDraggedGraph) {
-      const { x, y } = positionMap[name].translate;
-      setState((state) => ({
-        ...state,
-        translateX: x,
-        translateY: y,
-        lastTranslateX: x,
-        lastTranslateY: y,
-      }));
-    }
-    if (isDefaultGraph) {
-      setState((state) => ({
-        ...state,
-        translateX: 0,
-        translateY: 0,
-        lastTranslateX: 0,
-        lastTranslateY: 0,
-      }));
-    }
-  }, [graphState]);
+  // 要用以上邏輯·，要有三種型態： init graph, dragged graph, default graph
 
   return {
     isDragging: state.isDragging,

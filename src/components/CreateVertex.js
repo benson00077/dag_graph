@@ -47,9 +47,12 @@ export default function CreateVertex({ verticesInput, graph }) {
   };
 
   if (vertex) {
-    createVertex();
-    graph.giveRank();
-    //console.table(graph)
+    try {
+      createVertex();
+      graph.giveRank();
+    } catch (e) {
+      alert(e);
+    }
   }
 
   function test() {

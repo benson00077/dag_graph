@@ -14,7 +14,7 @@ export default function DrawArrow({
   name,
   forwardedRef,
   forwardedDivsRef,
-  isDefaultGraph,
+  graphState,
 }) {
   let [positionMap] = useContext(PositionContext);
   const { drawConnectorInitial } = useDrawConnector();
@@ -33,11 +33,16 @@ export default function DrawArrow({
     }
 
     let translateMap = {
-      divFrom: isDefaultGraph
-        ? { x: 0, y: 0 }
-        : positionMap[incommingName].translate,
-      divTo: isDefaultGraph ? { x: 0, y: 0 } : positionMap[name].translate,
+      divFrom: { x: 0, y: 0 },
+      divTo: { x: 0, y: 0 },
     };
+    // 當 dragged 後，又 create new vertex 時
+    if (!graphState.isDefaultGraph && positionMap[incommingName]) {
+      translateMap.divFrom = positionMap[incommingName].translate;
+    }
+    if (!graphState.isDefaultGraph && positionMap[name]) {
+      translateMap.divTo = positionMap[name].translate;
+    }
 
     drawConnectorInitial(
       divRelatedRefMap.from,
@@ -45,7 +50,7 @@ export default function DrawArrow({
       forwardedRef.current,
       translateMap
     );
-  }, [isDefaultGraph]);
+  }, [graphState, forwardedDivsRef]);
 
   return (
     <g

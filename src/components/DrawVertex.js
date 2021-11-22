@@ -19,8 +19,8 @@ export default function DrawVertex({
   row,
   forwardedRef,
   forwardedArrowsRefs,
-  isDefaultGraph,
-  setIsDefaultGraph,
+  graphState,
+  setGraphState,
 }) {
   let topPosition = 150 + 150 * row;
   let leftPosition = 150 * column;
@@ -54,16 +54,24 @@ export default function DrawVertex({
 
   const { isDragging, translateX, translateY } = useDrag(
     forwardedRef,
-    [translate, isDefaultGraph, name],
+    [graphState, name],
     {
       onDrag: drawArrowonDrag,
-      onPointerUp: () => {
+      onPointerUp: (e) => {
         ctxUpdateonMouseUp();
         setIsMouseUp(!isMouseUp);
-        setIsDefaultGraph(false);
       },
-      onPointerDown: () => {
+      onPointerDown: (e) => {
+        //console.log(e.currentTarget.id);
         setIsDisplaced(true);
+        setGraphState((prev) => ({
+          ...prev,
+          isDefaultGraph: false,
+          isInitGraph: false,
+          isDraggedGraph: false,
+          isDraggedGraph_byDrag: true,
+          currentDragTarget: e.currentTarget.id,
+        }));
       },
     }
   );
@@ -88,18 +96,38 @@ export default function DrawVertex({
   }, []);
 
   useEffect(() => {
-    if (isDefaultGraph) {
-      setTranslate({ x: 0, y: 0 });
-    } else {
-      setTranslate(positionMap[name].translate); ///
+    const {
+      isInitGraph,
+      isDefaultGraph,
+      isDraggedGraph,
+      isDraggedGraph_byDrag,
+      currentDragTarget,
+    } = graphState;
+
+    let trans = {};
+    if (isInitGraph) return;
+    if (isDefaultGraph) trans = { x: 0, y: 0 };
+    if (isDraggedGraph) {
+      trans = positionMap[name] ? positionMap[name].translate : { x: 0, y: 0 }; ///creating new vertex when not isDefaultGraph
     }
-  }, [isDefaultGraph]);
+    if (isDraggedGraph_byDrag) {
+      trans = positionMap[name] ? positionMap[name].translate : { x: 0, y: 0 }; ///creating new vertex when not isDefaultGraph
+    }
+    if (isDraggedGraph_byDrag && currentDragTarget !== name) {
+      // to be optimized
+      trans = { x: 0, y: 0 };
+      let relatedArrows = relatedArrowsDetector(forwardedArrowsRefs, name);
+      drawConnectorDynamic(relatedArrows, name, forwardedRef.current, trans);
+    }
+
+    setTranslate(trans);
+  }, [graphState.isDefaultGraph]);
 
   return (
     <div ref={forwardedRef} style={style} className="vertex" id={name}>
       {isDragging ? `${name} is now 🚀` : name}
-      <p>{"X :" + translateX}</p>
-      <p>{"Y :" + translateY}</p>
+      <p>{`useDrag:  (${translateX},${translateY})`}</p>
+      <p>{`vertex:  (${translate.x},${translate.y})`}</p>
     </div>
   );
 }

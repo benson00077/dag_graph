@@ -4,7 +4,7 @@ export const PositionContext = React.createContext();
 
 export const PositionContextProvider = (props) => {
   const [positionMap, setPositionMap] = useState({
-    name: {
+    _nameOfVertex: {
       isDisplaced: false,
       positionOrigin: [],
       positionNew: [],

@@ -18,7 +18,14 @@ export default function DrawGraph({ graph, topSorted }) {
   let [arrowsRecord, arrowsNumber] = arrowsInfoGetter(graph);
 
   // for btn restting vertex position back to default place
-  let [isDefaultGraph, setIsDefaultGraph] = useState(true);
+  // let [isDefaultGraph, setIsDefaultGraph] = useState(true);
+  let [graphState, setGraphState] = useState({
+    isInitGraph: true,
+    isDefaultGraph: false,
+    isDraggedGraph: false,
+    isDraggedGraph_byDrag: false,
+    currentDragTarget: null,
+  });
 
   // Vertex ref & Arrows ref for DOM (drag-n-drop & arrow connetor)
   const divsRefs = useRef([]);
@@ -36,7 +43,7 @@ export default function DrawGraph({ graph, topSorted }) {
         key={i}
         forwardedRef={arrowsRefs.current[i]}
         forwardedDivsRef={divsRefs.current}
-        isDefaultGraph={isDefaultGraph}
+        graphState={graphState}
       />
     ));
   };
@@ -61,8 +68,8 @@ export default function DrawGraph({ graph, topSorted }) {
             row={row}
             forwardedRef={divsRefs.current[i]}
             forwardedArrowsRefs={arrowsRefs.current}
-            isDefaultGraph={isDefaultGraph}
-            setIsDefaultGraph={setIsDefaultGraph}
+            graphState={graphState}
+            setGraphState={setGraphState}
           />
         );
       })
@@ -94,10 +101,7 @@ export default function DrawGraph({ graph, topSorted }) {
         </svg>
         {vertexRenderer()}
       </div>
-      <ButtonGraph
-        isDefaultGraph={isDefaultGraph}
-        setIsDefaultGraph={setIsDefaultGraph}
-      />
+      <ButtonGraph graphState={graphState} setGraphState={setGraphState} />
     </div>
   );
 }
