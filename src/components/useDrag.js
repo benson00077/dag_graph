@@ -91,7 +91,7 @@ const useDrag = (ref, deps = [], options) => {
       graphState;
 
     if (isInitGraph) return;
-    if (isDraggedGraph) {
+    if (isDraggedGraph && positionMap[name]) {
       const { x, y } = positionMap[name].translate;
       setState((state) => ({
         ...state,
