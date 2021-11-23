@@ -1,36 +1,34 @@
-import React, { useState } from 'react'
-import VertexInput from './VertexInput';
-import CreateVertex from './CreateVertex'
-import { PositionContextProvider } from './common/PositionContext'
-
-const Graph = require('../dag/graphClass')
+import React, { useState } from "react";
+import VertexInput from "./VertexInput";
+import CreateVertex from "./CreateVertex";
+import { PositionContextProvider } from "./common/PositionContext";
+import Graph from "../dag/graphClass";
 
 const graph = new Graph();
 
 /**
  * Represent Graph obj's storage layer
- * @param {*}  
+ * @param {*}
  * @returns {Context} PositionContext -- each vertex div's DOM position state
  * @returns {Component} CreateVertex -- access graph's method to create vertex
  * @returns {Component} VertexInput -- access users's vertex input
  */
 
 function GraphMiddleWare() {
+  const [verticesInput, setVerticesInput] = useState({
+    vertex: "",
+    incomming: "",
+    outgoing: "",
+  });
 
-    const [verticesInput, setVerticesInput] = useState({
-        vertex: '',
-        incomming: '',
-        outgoing: '',
-    })
-
-    return (
-        <div>
-          <PositionContextProvider>
-            <CreateVertex verticesInput={verticesInput} graph={graph}/>
-            <VertexInput setVerticesInput={setVerticesInput}/>
-          </PositionContextProvider>
-        </div>
-    )
+  return (
+    <div>
+      <PositionContextProvider>
+        <CreateVertex verticesInput={verticesInput} graph={graph} />
+        <VertexInput setVerticesInput={setVerticesInput} />
+      </PositionContextProvider>
+    </div>
+  );
 }
 
-export default GraphMiddleWare
+export default GraphMiddleWare;

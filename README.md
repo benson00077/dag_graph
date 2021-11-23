@@ -17,6 +17,8 @@ DAG datastructure inspired by [here](https://github.com/emberjs/ember.js/blob/62
 
 # Usage
 
+see demo [here](https://benson00077.github.io/dag_graph/)
+
 Give vertex name and it's incomming/outgoing vertices' name, to get the graph (DAG, or Directedd Acyclic Graph) that show the direction flow <br/>
 
 # Features to build

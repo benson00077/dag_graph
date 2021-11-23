@@ -23,61 +23,57 @@ graph =  {
 }
 */
 
-const Dag = require('./dagClass.js')
+import Dag from "./dagClass";
 
-class Graph extends Dag {
-    constructor() {
-        super()
-        this.rank = {}
-        this.topSorted = []
-    }
-    
-    topologySortCaller() {
-        let result = []
-        this.topsort((vertex, path) => {
-            result.push(vertex.name) 
-            // 參數 path 為當前迭代之路徑Array
-        })
-        this.topSorted = result
-        return result
-    }
+export default class Graph extends Dag {
+  constructor() {
+    super();
+    this.rank = {};
+    this.topSorted = [];
+  }
 
-    giveRank() { // if not anonymous, this would not bind
-        if (this.topSorted.length !== this.names.length) {
-            this.topologySortCaller()
-        }
-        this["rank"] = {}; // if not reset to empty, second time calling visit_giveRank wouod cause unexpected result
-        this._visit_giveRank()
-    }
+  topologySortCaller() {
+    let result = [];
+    this.topsort((vertex, path) => {
+      result.push(vertex.name);
+      // 參數 path 為當前迭代之路徑Array
+    });
+    this.topSorted = result;
+    return result;
+  }
 
-    _visit_giveRank() {
-        let leafToRootArr = [...this.topSorted].reverse()
-        let rankNumber = 0
-        leafToRootArr.forEach((name, i) => {
-            let incomingNames = [...this.vertices[name].incomingNames]
-            let nextName = leafToRootArr[i+1] // nextName = the vertex on left side in topsort
-            // if nextName is same rank
-            if (!incomingNames.includes(nextName)) {
-                this.rank[name] = rankNumber
-                return 
-            }
-            // else if nextName is higher rank
-            if (incomingNames.includes(nextName)) {
-                this.rank[name] = rankNumber
-                rankNumber += 1
-                return
-            }             
-        })
+  giveRank() {
+    // if not anonymous, this would not bind
+    if (this.topSorted.length !== this.names.length) {
+      this.topologySortCaller();
     }
+    this["rank"] = {}; // if not reset to empty, second time calling visit_giveRank wouod cause unexpected result
+    this._visit_giveRank();
+  }
+
+  _visit_giveRank() {
+    let leafToRootArr = [...this.topSorted].reverse();
+    let rankNumber = 0;
+    leafToRootArr.forEach((name, i) => {
+      let incomingNames = [...this.vertices[name].incomingNames];
+      let nextName = leafToRootArr[i + 1]; // nextName = the vertex on left side in topsort
+      // if nextName is same rank
+      if (!incomingNames.includes(nextName)) {
+        this.rank[name] = rankNumber;
+        return;
+      }
+      // else if nextName is higher rank
+      if (incomingNames.includes(nextName)) {
+        this.rank[name] = rankNumber;
+        rankNumber += 1;
+        return;
+      }
+    });
+  }
 }
-
-
-
 
 // let graph = new Graph();
 
 // module.exports = {
 //     graph
 // }
-
-module.exports = Graph
