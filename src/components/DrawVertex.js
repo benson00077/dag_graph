@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import useDrag from "./useDrag";
 import useDrawConnector from "./useDrawConnector";
+//import useDrawConnector from "./useDrawConnector_origin";
 import { PositionContext } from "./common/PositionContext";
 
 /**
@@ -27,7 +28,6 @@ export default function DrawVertex({
   let topStyle = topPosition + "px";
   let leftStyle = leftPosition + "px";
 
-  const [isDisplaced, setIsDisplaced] = useState(false);
   const [isMouseUp, setIsMouseUp] = useState(false);
   let [positionMap, setPositionMap] = useContext(PositionContext);
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
@@ -44,7 +44,6 @@ export default function DrawVertex({
     setPositionMap((prevState) => ({
       ...prevState,
       [name]: {
-        isDisplaced: isDisplaced,
         positionOrigin: [topPosition, leftPosition],
         positionNew: [topPosition + translate.x, leftPosition + translate.y],
         translate: translate,
@@ -63,7 +62,6 @@ export default function DrawVertex({
       },
       onPointerDown: (e) => {
         //console.log(e.currentTarget.id);
-        setIsDisplaced(true);
         setGraphState((prev) => ({
           ...prev,
           isDefaultGraph: false,
@@ -87,7 +85,6 @@ export default function DrawVertex({
     setPositionMap((prevState) => ({
       ...prevState,
       [name]: {
-        isDisplaced: isDisplaced,
         positionOrigin: [topPosition, leftPosition],
         positionNew: [topPosition + translate.x, leftPosition + translate.y],
         translate: translate,

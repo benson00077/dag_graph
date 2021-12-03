@@ -1,123 +1,147 @@
-
 export default function useDrawConnector() {
+  const drawConnectorInitial = (divFrom, divTo, arrowRef, translateMap) => {
+    const divs = { divFrom, divTo }
+    const path = new CurvedArrowLeftSide(divs, arrowRef)
+    path.mount(translateMap)
+  }
 
-    /** 呼叫時，有很多個 div
-     * Represent initial svg arrow drawer
-     * @param {DOM} divFrom 
-     * @param {DOM} divTo 
-     * @param {DOM} arrowRef 
-     * @param {Object} translate a map of both div's translate offset
-     */
-    const drawConnectorInitial = (divFrom, divTo, arrowRef, translate = { divfrom:{x:0, y:0}, divTo:{x:0, y:0} }) => {
-      drawConnector(divFrom, divTo, arrowRef, translate) 
-    }
+  const drawConnectorDynamic = (arrowsRefArr, vertexName, draggingDiv, translate) => {
+    arrowsRefArr.forEach((arrowsRef) => {
+      let arrowRef = arrowsRef.current
+      let indicator = ""
+      const divs = {divFrom: null, divTo: null}
+      if (arrowRef.getAttribute("vertex_from") === vertexName) {
+        indicator = "FROM"
+        divs.divFrom = draggingDiv
+      } else if (arrowRef.getAttribute("vertex_to") === vertexName) {
+        indicator = "TO"
+        divs.divTo = draggingDiv
 
-    /** 呼叫時，只有一個 div (from端 or to端)
-     * Represent updator of svg arrow drawer after darg-n-drop, BASED on the initail svg arrow para
-     * Represent the distributer: decide change either from-side's or to-side's svg arrow
-     * @param {Array} arrowsRefArr [..., {current: DOM}]
-     * @param {String} vertexName 
-     * @param {DOM} draggingDiv 
-     * @param {Object} translate {x: 0, y: 0} a map of one div's translate offset
-     */
-    const drawConnectorDynamic = (arrowsRefArr, vertexName, draggingDiv, translate) => {
-        arrowsRefArr.forEach((arrowsRef) => {
-            let arrowRef = arrowsRef.current
-            if (arrowRef.getAttribute("vertex_from") === vertexName) {
-              drawConnector(draggingDiv, null, arrowRef, translate)
-              return 
-            }
-            if (arrowRef.getAttribute("vertex_to") === vertexName) {
-              drawConnector(null, draggingDiv, arrowRef, translate)
-              return
-            }
-        })
-    }
-    
-    return ({
-        drawConnectorInitial,
-        drawConnectorDynamic
+      }
+
+      const path = new CurvedArrowLeftSide_onDrag(divs, arrowRef, indicator)
+      path.mount(translate)
     })
+  }
+
+  return ({
+    drawConnectorInitial,
+    drawConnectorDynamic
+  })
 }
 
 
 
-/**
- * Set svg dom tag's attibue, represent svg drawer for arrows which is linked to vertex divs
- * @param {DOM} divFrom represent vertex div
- * @param {DOM} divTo represent vertex div
- * @param {DOM} arrowsRef represent arrow svg html tag: <g> -> <path>
- * @param {Object} translate represent offset of tranfrom:translate -- initial {x:0,y:0}
- */
- const drawConnector = function(divFrom, divTo, arrowRef, translate) {
-    
-    /* for drawConnectorInitial */
-    if (divFrom && divTo) { 
-      let [fromPosnLeft, toPosnLeft] = posnEndpoints(divFrom, divTo, translate)
-      let dStrLeft =
-        "M" +
-        (fromPosnLeft.x      ) + "," + (fromPosnLeft.y) + " " +
-        "C" +
-        (fromPosnLeft.x - 100) + "," + (fromPosnLeft.y) + " " +
-        (toPosnLeft.x - 100) + "," + (toPosnLeft.y) + " " +
-        (toPosnLeft.x      ) + "," + (toPosnLeft.y);
-      arrowRef.setAttribute("d", dStrLeft);
-     }
+/// 感覺資料不適合存在 contructor 裏面，因為 divFrom, divTo 的位置會被拖曳～ 可是 new 的時候都會記住 init / default place
+
+class SvgPath {
+  constructor(svgPathEle) {
+    if (!svgPathEle instanceof SVGPathElement) throw new Error("para should be SVGPathElement")
+    this.svgPath = svgPathEle
+  }
+
+  getPathParaArr = () => {
+    const dStr = this.svgPath.getAttribute("d") // "M142,180 C42,180 192,310 292,310"
+    const dArr = dStr.split(" ")                // ["M142,180", "C42,180", "192,310", "292,310"]
+    return dArr
+  }
+
+  mount(pathPara) {
+    this.svgPath.setAttribute("d", pathPara)
+  }
+}
+
+class SvgPathPoints {
+  constructor({ divFrom, divTo }) {
+    this.divFrom = divFrom
+    this.divTo = divTo
+  }
+
+  getPosn() {
+    const from = this.divFrom 
+        ? {
+            x: this.divFrom.offsetLeft - 8,
+            y: this.divFrom.offsetTop + this.divFrom.offsetHeight / 2 + 10
+          }
+        : null
+    const to = this.divTo
+      ? {
+          x: this.divTo.offsetLeft - 8,
+          y: this.divTo.offsetTop  + this.divTo.offsetHeight / 2 - 10
+        }
+      : null
+    return [from, to]
+  }
+
+  getPosn_translated(translateMap= {divFrom: {x:0, y:0}, divTo: {x:0, y:0}}) {
+    console.log(translateMap)
+    if (!translateMap.divFrom || !translateMap.divTo) throw new Error("Wrong translateMap format input")
+    const { divFrom, divTo } = translateMap
+    let [ from, to ] = this.getPosn()
+    from.x += divFrom.x;
+    from.y += divFrom.y;
+    to.x += divTo.x;
+    to.y += divTo.y;
+    return [from, to]
+  }
+}
 
 
-    /* for drawConnectorDynamic */
-    let dStr = arrowRef.getAttribute("d")
-    let dArr = dStr.split(" ") // ["M142,180", "C42,180", "192,310", "292,310"]
-    // change divTo's side only
-    if (divFrom === null) {
-      let toPosnLeft = {
-              x: divTo.offsetLeft - 8 + translate.x,
-              y: divTo.offsetTop  + divTo.offsetHeight / 2 - 10 + translate.y
-          };
-      let dStrLeft =
-          dArr[0] + " " +
-          dArr[1] + " " +
-          (toPosnLeft.x - 100) + "," + (toPosnLeft.y) + " " +
-          (toPosnLeft.x      ) + "," + (toPosnLeft.y);
-      arrowRef.setAttribute("d", dStrLeft);
+class CurvedArrowLeftSide {
+  constructor(divs, svgPathEle) {
+    this.svgPathPoints = new SvgPathPoints(divs)
+    this.svgPath = new SvgPath(svgPathEle)
+  }
+
+  mount(translate) {
+    this.svgPath.mount(this._getPathPara(translate))
+  }
+
+  _getPathPara(translate) {
+    const [ from, to ] = this.svgPathPoints.getPosn_translated(translate)
+    return (
+      `M${from.x},${from.y} ` + 
+      `C${from.x-100},${from.y} ${to.x -100},${to.y} ${to.x},${to.y}`
+    )
+  }
+}
+
+
+class CurvedArrowLeftSide_onDrag {
+  constructor(divs, svgPathEle, indicator) {
+    if (indicator !== "FROM" && indicator !== "TO") throw new Error("Wrong indicator format")
+    this.svgPathPoints = new SvgPathPoints(divs)
+    this.svgPath = new SvgPath(svgPathEle)
+    this.indicator = indicator  
+  }
+
+  mount(translate) {
+    this.svgPath.mount(this._getPathPara(translate))
+  }
+
+  _getPathPara(translate = {x:0, y:0}) {
+    let dArr = this.svgPath.getPathParaArr()
+    let [ from, to ] = this.svgPathPoints.getPosn()
+
+    let pathPara = ""
+    if (this.indicator === "FROM") {
+      from = {
+        x: from.x + translate.x,
+        y: from.y + translate.y 
+      }
+      pathPara = 
+        `M${from.x},${from.y} ` + 
+        `C${from.x-100},${from.y} ${dArr[2]} ${dArr[3]}`    
     }
-    
-    // change divTo's side only
-    if (divTo === null) {
-        let fromPosnLeft = {
-                x: divFrom.offsetLeft - 8 + translate.x,
-                y: divFrom.offsetTop  + divFrom.offsetHeight / 2 + 10 + translate.y
-            };
-        let dStrLeft =
-            "M" +
-            (fromPosnLeft.x      ) + "," + (fromPosnLeft.y) + " " +
-            "C" +
-            (fromPosnLeft.x - 100) + "," + (fromPosnLeft.y) + " " +
-            dArr[2] + " " +
-            dArr[3];
-        //console.log(dStrLeft)
-        //console.log(fromPosnLeft)
-        arrowRef.setAttribute("d", dStrLeft);
+    if (this.indicator === "TO") {
+      to = {
+        x: to.x + translate.x,
+        y: to.y + translate.y 
+      }
+      pathPara = 
+        `${dArr[0]} ` + 
+        `${dArr[1]} ${to.x -100},${to.y} ${to.x},${to.y}`    
     }
-  };
-
-const posnEndpoints = (divFrom, divTo, translate) => {
-
-  
-  // base arrow point
-  let fromPosnLeft = {
-    x: divFrom.offsetLeft - 8,
-    y: divFrom.offsetTop  + divFrom.offsetHeight / 2 + 10
-  };
-  let toPosnLeft = {
-      x: divTo.offsetLeft - 8,
-      y: divTo.offsetTop  + divTo.offsetHeight / 2 - 10
-  };
-  
-  // base arrow point + transform translate offset of div
-  fromPosnLeft.x += translate.divFrom.x;
-  fromPosnLeft.y += translate.divFrom.y;
-  toPosnLeft.x += translate.divTo.x;
-  toPosnLeft.y += translate.divTo.y;
-  return [fromPosnLeft, toPosnLeft]
+    return pathPara
+  }
 }

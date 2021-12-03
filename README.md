@@ -1,7 +1,5 @@
 # Table of Content
 
-代號標註：❓ 思考中 ⏰ TBD 🆘 問題移駕 Issue
-
 - [Table of Content](#table-of-content)
 - [Init](#init)
 - [Usage](#usage)

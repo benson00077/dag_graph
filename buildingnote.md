@@ -13,6 +13,8 @@
 
 # Building Log & Note
 
+代號標註：❓ 思考中 ⏰ TBD 🆘 問題移駕 Issue
+
 ## Tree & Component
 
 - Tree in src directory
